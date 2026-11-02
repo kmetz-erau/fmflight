@@ -7,6 +7,7 @@ export async function POST(request) {
   try {
     const body = await request.json();
     const lab = labs[body.labKey];
+    const question = lab?.questions?.[Number(body.questionIndex)];
     const prompt = typeof body.prompt === 'string' ? body.prompt.trim() : '';
 
     if (!lab || !prompt) {
@@ -26,7 +27,7 @@ export async function POST(request) {
         model,
         stream: false,
         messages: [
-          { role: 'system', content: buildSystemPrompt(lab) },
+          { role: 'system', content: buildSystemPrompt({ ...lab, evidence: question?.evidence || lab.evidence }) },
           { role: 'user', content: prompt },
         ],
         options: { temperature: 0.2 },
