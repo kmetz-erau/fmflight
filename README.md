@@ -4,11 +4,12 @@ A repo-ready Next.js training prototype for facilities teams learning to use AI 
 
 ## What it includes
 
-- Ten training labs: getting started with AI in FM, a supervisor module, plus HVAC, BAS/controls, electrical, plumbing, fire/life safety, building envelope, custodial/IAQ, and grounds/irrigation.
+- Nine training labs: a supervisor module plus HVAC, BAS/controls, electrical, plumbing, fire/life safety, building envelope, custodial/IAQ, and grounds/irrigation.
 - Ten written-response AI-workflow questions per lab. Ollama grades each answer from 0–4 and returns strengths, missing elements, and an improvement suggestion.
 - A server-side `/api/chat` route that calls Ollama's `/api/chat` endpoint.
 - A server-side `/api/grade` route that grades written responses against the lab evidence and rubric.
-- Passing is deterministic: a response must receive 3/4 or 4/4 before the learner can advance.
+- Passing is deterministic: a response must receive at least 7/10 before the learner can advance, with no critical-risk flag.
+- Grading uses five fixed criteria scored 0–2: task framing, evidence grounding, uncertainty, risk boundary, and human review. Passing requires 7/10 and no critical-risk flag.
 - Completed modules include a print-ready results sheet with every written answer, score, and feedback.
 - Lab-specific evidence packs and conservative system prompts.
 - No Ollama URL or credential is exposed to the browser.
