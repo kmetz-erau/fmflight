@@ -4,7 +4,8 @@ A repo-ready Next.js training prototype for facilities teams learning to use AI 
 
 ## What it includes
 
-- Three interactive training labs: manual lookup, troubleshooting, and work-order review.
+- Eight trade-based training labs covering HVAC, BAS/controls, electrical, plumbing, fire/life safety, building envelope, custodial/IAQ, and grounds/irrigation.
+- Ten AI-workflow questions per lab focused on prompt framing, source grounding, uncertainty, verification, privacy, safety boundaries, and handoffs.
 - A server-side `/api/chat` route that calls Ollama's `/api/chat` endpoint.
 - Lab-specific evidence packs and conservative system prompts.
 - No Ollama URL or credential is exposed to the browser.
