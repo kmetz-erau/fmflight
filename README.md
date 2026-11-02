@@ -5,7 +5,7 @@ A repo-ready Next.js training prototype for facilities teams learning to use AI 
 ## What it includes
 
 - Nine training labs: a supervisor module plus HVAC, BAS/controls, electrical, plumbing, fire/life safety, building envelope, custodial/IAQ, and grounds/irrigation.
-- Eight written-response AI-workflow questions per lab. Ollama grades each answer from 0–10 and returns strengths, missing elements, and an improvement suggestion.
+- Eight written-response AI-workflow demonstrations per lab. Learners practice a real job task, check the AI result, improve it, and explain what they kept or changed. Ollama grades each answer from 0–10 and returns strengths, missing elements, and an improvement suggestion.
 - A server-side `/api/chat` route that calls Ollama's `/api/chat` endpoint.
 - A server-side `/api/grade` route that grades written responses against the lab evidence and rubric.
 - Passing is deterministic: a response must receive at least 7/10 before the learner can advance, with no critical-risk flag.

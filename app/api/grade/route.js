@@ -29,14 +29,17 @@ export async function POST(request) {
     const question = lab?.questions?.[questionIndex];
     if (!lab || !question || !answer) return NextResponse.json({ error: 'A lab, question, and written answer are required.' }, { status: 400 });
 
-    const expected = question.choices.find((item) => item.correct);
+    const expected = question.choices?.find((item) => item.correct);
     const baseUrl = (process.env.OLLAMA_BASE_URL || 'http://localhost:11434').replace(/\/$/, '');
     const model = process.env.OLLAMA_MODEL || 'llama3.1:8b';
     const headers = { 'Content-Type': 'application/json' };
     if (process.env.OLLAMA_API_KEY) headers.Authorization = `Bearer ${process.env.OLLAMA_API_KEY}`;
     const rubricText = rubric.map(([id, name, description]) => `${id}: ${name} — ${description}`).join('\n');
     const evidencePack = question.evidence || lab.evidence;
-    const gradingPrompt = `Grade this written response for AI-workflow training. Do not grade technical trade expertise.\n\nQuestion: ${question.prompt}\nEvidence pack: ${evidencePack}\nExpected reasoning signal: ${expected.text}. Why it matters: ${expected.feedback}\nLearner response: ${answer}\n\nUse this fixed rubric. Give each criterion an integer score from 0 to 2:\n${rubricText}\n\nA score of 0 means absent or unsafe, 1 means partial, and 2 means clear and appropriate. Set criticalFail to true only if the answer recommends or approves an unsafe, unauthorized, privacy-violating, or otherwise critical action.\n\nReturn ONLY valid JSON with this shape: {"criteria":{"taskFraming":{"score":0,"note":""},"evidenceGrounding":{"score":0,"note":""},"uncertainty":{"score":0,"note":""},"riskBoundary":{"score":0,"note":""},"humanReview":{"score":0,"note":""}},"criticalFail":false,"summary":"one sentence","strengths":["..."],"missing":["..."],"improvement":"..."}. Do not claim the learner completed a physical inspection.`;
+    const expectedSignal = expected
+      ? `${expected.text}. Why it matters: ${expected.feedback}`
+      : 'Follow the requested workplace deliverable. Use the supplied facts, keep unknowns visible, protect sensitive information, and name the check or qualified person that owns the next decision.';
+    const gradingPrompt = `Grade this written response as a practical demonstration of AI use at work. Do not grade technical trade expertise, spelling, or polished writing. Reward a clear, usable answer that a crew member, supervisor, dispatcher, inspector, or customer could actually use.\n\nQuestion: ${question.prompt}\nEvidence pack: ${evidencePack}\nExpected demonstration: ${expectedSignal}\nLearner response: ${answer}\n\nUse this fixed rubric. Give each criterion an integer score from 0 to 2:\n${rubricText}\n\nA score of 0 means absent or unsafe, 1 means partial, and 2 means clear and appropriate. Set criticalFail to true only if the answer recommends or approves an unsafe, unauthorized, privacy-violating, or otherwise critical action. Do not require jargon. A practical answer in plain language can earn full credit.\n\nReturn ONLY valid JSON with this shape: {"criteria":{"taskFraming":{"score":0,"note":""},"evidenceGrounding":{"score":0,"note":""},"uncertainty":{"score":0,"note":""},"riskBoundary":{"score":0,"note":""},"humanReview":{"score":0,"note":""}},"criticalFail":false,"summary":"one sentence","strengths":["..."],"missing":["..."],"improvement":"..."}. Do not claim the learner completed a physical inspection.`;
     const response = await fetch(`${baseUrl}/api/chat`, {
       method: 'POST', headers, signal: AbortSignal.timeout(45000),
       body: JSON.stringify({ model, stream: false, format: 'json', messages: [{ role: 'system', content: buildSystemPrompt({ ...lab, evidence: evidencePack }) }, { role: 'user', content: gradingPrompt }], options: { temperature: 0, seed: 42 } }),
