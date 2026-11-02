@@ -24,6 +24,28 @@ const quickActions = [
 
 function quickActionsFor(question) {
   const text = `${question?.stageName || ''} ${question?.prompt || ''}`.toLowerCase();
+  const scenarioActions = [
+    [
+      [['Plan the job', 'Turn this situation into a short plan for what to ask, gather, and check before the work starts.'], ['Use CRAFT', 'Build a prompt with the context, reader, ask, format, and truth-check this job needs.'], ['Protect the input', 'What information should be removed or protected before it goes into an AI tool?'], ['Set the boundary', 'What should AI prepare here, and what decision must stay with the qualified person?']],
+      [['Check the draft', 'Review the draft against the supplied facts. Mark what is correct, unsupported, missing, or unsafe.'], ['Find the next check', 'What is the next observation, measurement, source, or person needed before this result is used?'], ['Improve the output', 'Turn the corrected facts into a usable checklist, handoff, or message in plain language.'], ['Save the shop card', 'Extract the repeatable steps from this job into a short template for the next similar task.']],
+    ],
+    [
+      [['Compare the information', 'Compare the supplied notes, records, photos, or documents. Keep the original labels and mark gaps or conflicts.'], ['Ask the expert', 'Create the three questions a qualified coworker, vendor, or supervisor should answer next.'], ['Make the source clear', 'Show which fact came from which source and flag anything that needs confirmation.'], ['Keep it practical', 'Turn the comparison into a short next-step list someone can use on the job.']],
+      [['Challenge the recommendation', 'Look for an unsupported cause, invented number, missing hazard, or shortcut in the recommendation.'], ['Prepare the conversation', 'Create a short list of questions for the vendor, supervisor, or responsible trade.'], ['Draft the reply', 'Write a plain-language reply that asks for what is missing without approving or promising anything.'], ['Name the owner', 'State who must review, approve, inspect, or make the final decision.']],
+    ],
+    [
+      [['Prepare the meeting', 'Turn these materials into a short meeting brief with decisions needed, questions, and missing information.'], ['Compare options', 'Make a simple comparison of the options using only the supplied information. Do not select an option.'], ['Find the risk', 'Identify the assumption or missing detail that could make the plan fail or create extra work.'], ['Make it a handout', 'Create a one-page checklist the crew can use during the meeting or pre-job huddle.']],
+      [['Test the plan', 'List the expected result, how it will be checked, who approves the test, and what would make the team stop.'], ['Review the scope', 'Find missing timing, access, materials, exclusions, closeout, or rollback details.'], ['Write the questions', 'Draft the questions that must be answered before the work is scheduled or approved.'], ['Explain the human decision', 'State what AI helped organize and what the supervisor or qualified person still decides.']],
+    ],
+    [
+      [['Build the handoff', 'Turn the notes into a short handoff with what happened, what was checked, what is open, and who goes next.'], ['Change the audience', 'Rewrite the information for the next crew, supervisor, resident, or manager in plain language.'], ['Keep unknowns visible', 'Mark every fact that is missing, uncertain, or still needs a field check.'], ['Protect the details', 'Check the draft for personal, security-sensitive, access, or confidential information before sharing it.']],
+      [['Check the closeout', 'Review the final message or handoff for unsupported claims, promises, missing owners, and missing next steps.'], ['Make it reusable', 'Turn the successful workflow into a short shop card or template for the next shift.'], ['Measure the time', 'Identify what AI actually saved, what review it required, and whether this use is worth repeating.'], ['Print the takeaway', 'Create a concise final checklist that the crew could keep with the job materials.']],
+    ],
+  ];
+  if (Number.isInteger(question?.scenarioIndex) && Number.isInteger(question?.questionInScene)) {
+    const scenario = scenarioActions[question.scenarioIndex % scenarioActions.length];
+    return scenario[question.questionInScene === 1 ? 1 : 0];
+  }
   if (/vendor|quote|proposal|roofer|parts|order/.test(text)) return [
     ['Compare the options', 'Compare the supplied quote, proposal, or part information in a simple table. Mark confirmed details, missing details, and questions. Do not choose the option.'],
     ['Write vendor questions', 'Give me the three most useful questions to send to the vendor before we approve, order, or schedule anything.'],
