@@ -156,7 +156,6 @@ export default function Home() {
   const [savedCards, setSavedCards] = useState([]);
   const [showGuide, setShowGuide] = useState(false);
   const [hydrated, setHydrated] = useState(false);
-  const [voiceListening, setVoiceListening] = useState(false);
   const [retrying, setRetrying] = useState(false);
 
   const lab = activeLab ? labs[activeLab] : null;
@@ -200,30 +199,6 @@ export default function Home() {
   function useQuickAction(text) {
     setPrompt(text);
     document.querySelector('.promptRow input')?.focus();
-  }
-
-  function readQuestion() {
-    if (!question || !('speechSynthesis' in window)) { setError('Read-aloud is not available in this browser.'); return; }
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(question.prompt);
-    utterance.rate = 0.95;
-    window.speechSynthesis.speak(utterance);
-  }
-
-  function dictateAnswer() {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) { setError('Voice input is not available in this browser. Try Chrome or Edge, or type your answer.'); return; }
-    const recognition = new SpeechRecognition();
-    recognition.lang = 'en-US';
-    recognition.interimResults = false;
-    recognition.onstart = () => setVoiceListening(true);
-    recognition.onend = () => setVoiceListening(false);
-    recognition.onerror = () => { setVoiceListening(false); setError('Voice input could not start. Check the browser microphone permission.'); };
-    recognition.onresult = (event) => {
-      const transcript = Array.from(event.results).map((result) => result[0].transcript).join(' ');
-      setAnswer((current) => `${current}${current ? ' ' : ''}${transcript}`);
-    };
-    recognition.start();
   }
 
   function saveShopCard() {
@@ -281,7 +256,6 @@ export default function Home() {
         <div className="questionScenario"><span>SCENARIO {question.scenarioIndex + 1} OF 4</span><b>{question.stageName}</b><small>Questions {question.scenarioIndex * 2 + 1}–{question.scenarioIndex * 2 + 2}</small></div>
         <div className="labGrid"><div className="evidence"><h3>Job info</h3><div className="scenarioBrief"><small>WORK CONTEXT</small><b>{lab.scenario}</b><p>The trade setting is context. The task is to use AI for a practical next step.</p></div><EvidencePack question={question} sourceTitle={lab.sourceTitle} /><div className="callout"><b>Today's job skill:</b> {questionIndex < 2 ? 'Ask better questions before the job starts.' : questionIndex < 4 ? 'Catch guesses before they become work.' : questionIndex < 6 ? 'Use AI to prepare a useful conversation.' : 'Leave the next person with a clear, usable next step.'}</div><div className="goodLooks"><b>What a useful answer includes</b><span>• The facts you used</span><span>• What you would check</span><span>• Who owns the next decision</span></div></div>
           <div className="assistant"><div className="assistantTitle"><div><h3>FM AI Tool</h3><span className="assistantSub">Suggestions for: {question.stageName}</span></div><span className="toolStatus"><i /> Ready</span></div><div className="chat" onCopy={(event) => event.preventDefault()}><div className="aiLabel">FM AI TOOL</div>{copilotAnswer ? <FormattedToolResponse text={copilotAnswer} /> : <><p className="starter">What would make this job easier?</p><p className="hint">These starters are matched to this job task. You can also write your own request.</p></>}</div><div className="quickActions">{quickActionsFor(question).map(([label, text]) => <button key={label} onClick={() => useQuickAction(text)}>{label}</button>)}</div><form className="promptRow" onSubmit={askCopilot}><input value={prompt} onChange={(event) => setPrompt(event.target.value)} placeholder="Ask about this job task…" /><button disabled={loading}>{loading ? '…' : 'Ask'}</button></form></div></div>
-        <div className="decision"><div className="questionCounter">YOUR TURN · {questionIndex + 1} / {lab.questions.length}</div><div className="deliverableLabel">WHAT TO HAND IN</div><div className="questionTools"><button type="button" onClick={readQuestion}>🔊 Read question</button><button type="button" onClick={dictateAnswer} className={voiceListening ? 'listening' : ''}>{voiceListening ? '● Listening…' : '🎙 Dictate answer'}</button></div><h3>{question.prompt}</h3><form onSubmit={submitAnswer}><textarea className="answerBox" value={answer} onChange={(event) => setAnswer(event.target.value)} onPaste={(event) => { event.preventDefault(); setError('Please write your answer in your own words. Pasting from the FM AI Tool is disabled.'); }} onDrop={(event) => { event.preventDefault(); setError('Please write your answer in your own words. Drag-and-drop is disabled.'); }} placeholder="Write the prompt, checklist, message, questions, or next step you would actually use…" rows={7} disabled={grading} /><div className="answerActions"><span>Use your own words. Include what you would check.</span><button className="gradeButton" disabled={grading || !answer.trim()}>{grading ? 'Checking your work…' : 'Check my answer'}</button></div></form>{error && <div className="error">{error}{error.toLowerCase().includes('ollama') && <button type="button" className="retryButton" onClick={retryCopilot} disabled={retrying}>{retrying ? 'Trying again…' : 'Try FM AI Tool again'}</button>}</div>}{grade && <div className={`gradeCard ${grade.passed ? 'good' : 'needsWork'}`}><div className="gradeHeader"><b>{grade.passed ? 'Ready to keep' : 'Make one more pass'}</b><strong>{grade.total}/10</strong></div><p>{grade.summary}</p><div className="criteriaGrid">{Object.entries(grade.criteria || {}).map(([key, item]) => <div key={key}><span>{key.replace(/([A-Z])/g, ' $1')}</span><b>{item.score}/2</b></div>)}</div>{grade.criticalFail && <p className="criticalFail"><b>Stop here:</b> this answer needs its unsafe or unauthorized recommendation corrected.</p>}{grade.strengths?.length > 0 && <><b>Keep</b><ul>{grade.strengths.map((item) => <li key={item}>{item}</li>)}</ul></>}{grade.missing?.length > 0 && <><b>Check or improve</b><ul>{grade.missing.map((item) => <li key={item}>{item}</li>)}</ul></>}{grade.improvement && <p><b>Next improvement:</b> {grade.improvement}</p>}{grade.passed && <><button type="button" className="shopCardButton" onClick={saveShopCard}>{savedCards.some((item) => item.id === `${activeLab}-${questionIndex}`) ? 'Saved to shop cards ✓' : 'Save this task as a shop card'}</button><button className="next" onClick={nextQuestion}>{questionIndex === lab.questions.length - 1 ? 'Finish lab ✓' : 'Next job task →'}</button></>}</div>}{completed.includes(activeLab) && <><div className="complete"><b>Lab complete ✓</b><br />Your answers, feedback, and reusable shop card are ready to print.</div><button className="printButton" onClick={() => window.print()}>Print results and shop card</button><div className="printSummary"><div className="printBrand">FACILITIES AI FIELD LAB · {lab.trade}</div><h2>{lab.title}</h2><p>Completed lab · practical AI-use workflow training</p><div className="shopCard"><h3>Reusable shop card</h3><p><b>Use AI for:</b> {lab.description}</p><p><b>Before using the result:</b> Check it against the supplied source, your field knowledge, and the qualified person who owns the decision.</p><p><b>Do not delegate:</b> Safety-critical decisions, code or compliance sign-off, engineering judgment, or sensitive information.</p>{savedCards.filter((item) => item.lab === lab.title).length > 0 && <p><b>Saved tasks:</b> {savedCards.filter((item) => item.lab === lab.title).map((item) => item.task).join(' · ')}</p>}</div>{lab.questions.map((item, index) => { const result = results[activeLab]?.[index]; return <section key={item.prompt}><h3>{index + 1}. {item.prompt}</h3><p><b>Learner answer:</b> {result?.answer || 'No answer recorded.'}</p><p><b>AI score:</b> {result?.grade?.total ?? '—'}/10 · {result?.grade?.summary || ''}</p>{result?.grade?.missing?.length > 0 && <p><b>Check or improve:</b> {result.grade.missing.join(' ')}</p>}</section>; })}</div></>}</div>
       </section>}
     </main>
   </>;

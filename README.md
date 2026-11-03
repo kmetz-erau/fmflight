@@ -11,7 +11,7 @@ A repo-ready Next.js training prototype for facilities teams learning to use AI 
 - Passing is deterministic: a response must receive at least 7/10 before the learner can advance, with no critical-risk flag.
 - Grading uses five fixed criteria scored 0–2: task framing, evidence grounding, uncertainty, risk boundary, and human review. Passing requires 7/10 and no critical-risk flag.
 - Completed modules include a print-ready results sheet with every written answer, score, and feedback.
-- Browser-local progress saving, resume support, first-use walkthrough, read-aloud and dictation controls, task-specific quick actions, and reusable shop cards.
+- Browser-local progress saving, resume support, first-use walkthrough, task-specific quick actions, and reusable shop cards.
 - Lab-specific evidence packs and conservative system prompts.
 - Practical Task → Try → Check → Keep exercises, CRAFT prompt guidance, risk-lane boundaries, stop conditions, and source-of-truth verification.
 - No Ollama URL or credential is exposed to the browser.
