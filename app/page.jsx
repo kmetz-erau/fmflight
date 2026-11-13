@@ -238,7 +238,9 @@ function FMJourney() {
 
   function useStarter(label) {
     const firstPrompt = `Context: ${stop.scene}\nReader: The ${profile.name} technician and supervisor.\nAsk: Turn this into a short field-preparation checklist.\nFormat: Use bullets for known facts, missing information, and the next human checks.\nTruth-check: Use only the supplied note. Do not diagnose, choose a repair, or invent a fact.`;
-    const starter = label === 'Build a first prompt' ? firstPrompt : starterPatterns[label];
+    const starter = label === 'Build a first prompt'
+      ? firstPrompt
+      : starterPatterns[label] || `Use the current ${profile.name} work order to ${label.toLowerCase()}. Use only the supplied facts, identify what is missing, and clearly state what a qualified person must verify.`;
     setAiPrompt((current) => current ? `${current}\n\n${starter}` : starter);
   }
 
