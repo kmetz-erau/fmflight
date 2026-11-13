@@ -204,7 +204,7 @@ function FMJourney() {
   const [resources, setResources] = useState({ time: 100, safety: 100, quality: 60, trust: 60, rework: 100, skill: 0 });
   const [bestScore, setBestScore] = useState(null);
   const profile = tradeProfiles[selectedTrade || 'hvac'];
-  const activeContent = tradeStopContent[selectedTrade || 'hvac'];
+  const activeContent = tradeStopContent[selectedTrade || 'hvac'] || tradeStopContent.hvac;
   const activeStops = stops.map((base, index) => ({ ...base, ...activeContent[index], trade: profile.name, scene: formatWorkOrder(profile, index, profile.scenes[index]) }));
   const stop = activeStops[stopIndex];
   const result = submitted ? scoreMove(stop, response, aiUsed) : null;
@@ -213,23 +213,27 @@ function FMJourney() {
   const routePercent = Math.round((stopIndex / (stops.length - 1)) * 100);
 
   useEffect(() => {
-    const saved = Number(window.localStorage.getItem('facilities-ai-field-lab-fm-journey-best'));
-    if (saved) setBestScore(saved);
+    try {
+      const saved = Number(window.localStorage.getItem('facilities-ai-field-lab-fm-journey-best'));
+      if (saved) setBestScore(saved);
+    } catch { /* local storage can be unavailable in privacy-restricted browsers */ }
   }, []);
 
   useEffect(() => {
-    const incoming = document.querySelector('.incoming');
-    if (!incoming || !stop.scene.toLowerCase().includes('photo')) return undefined;
-    const positions = { hvac: '0% 0%', electrical: '50% 0%', plumbing: '100% 0%', carpentry: '0% 100%', grounds: '100% 100%' };
-    const figure = document.createElement('figure');
-    figure.className = 'evidencePhoto';
-    figure.style.backgroundImage = "url('/evidence-photo-sheet.png')";
-    figure.style.backgroundPosition = positions[selectedTrade] || '0% 0%';
-    const caption = document.createElement('figcaption');
-    caption.textContent = `PHOTO EVIDENCE · ${profile.name}`;
-    figure.appendChild(caption);
-    incoming.appendChild(figure);
-    return () => figure.remove();
+    try {
+      const incoming = document.querySelector('.incoming');
+      if (!incoming || !stop?.scene?.toLowerCase().includes('photo')) return undefined;
+      const positions = { hvac: '0% 0%', electrical: '50% 0%', plumbing: '100% 0%', carpentry: '0% 100%', grounds: '100% 100%' };
+      const figure = document.createElement('figure');
+      figure.className = 'evidencePhoto';
+      figure.style.backgroundImage = "url('/evidence-photo-sheet.png')";
+      figure.style.backgroundPosition = positions[selectedTrade] || '0% 0%';
+      const caption = document.createElement('figcaption');
+      caption.textContent = `PHOTO EVIDENCE · ${profile.name}`;
+      figure.appendChild(caption);
+      incoming.appendChild(figure);
+      return () => figure.remove();
+    } catch { return undefined; }
   }, [selectedTrade, stopIndex, profile.name, stop.scene]);
 
   function useStarter(label) {
@@ -269,7 +273,7 @@ function FMJourney() {
     setResults(nextResults);
     setResources((current) => { const nextQuality = Math.max(0, Math.min(100, current.quality + (move.score >= 75 ? 8 : -5))); return { time: Math.max(0, current.time - (move.dangerousHits ? 18 : 10)), safety: Math.max(0, current.safety - move.dangerousHits * 16), quality: nextQuality, trust: nextQuality, rework: Math.max(0, current.rework - (move.dangerousHits ? 18 : move.score >= 75 ? 0 : 7)), skill: Math.min(100, current.skill + (move.helpfulHits >= 3 ? 15 : 7)) }; });
     if (stopIndex < stops.length - 1) { setStopIndex(stopIndex + 1); setResponse(''); setAiPrompt(''); setAiResponse(''); setAiError(''); setAiUsed(false); setSubmitted(false); }
-    else { const finalScore = nextResults.reduce((sum, item) => sum + item.score, 0); if (!bestScore || finalScore > bestScore) { setBestScore(finalScore); window.localStorage.setItem('facilities-ai-field-lab-fm-journey-best', String(finalScore)); } }
+    else { const finalScore = nextResults.reduce((sum, item) => sum + item.score, 0); if (!bestScore || finalScore > bestScore) { setBestScore(finalScore); try { window.localStorage.setItem('facilities-ai-field-lab-fm-journey-best', String(finalScore)); } catch { /* optional persistence */ } } }
   }
 
   function restart() { setStopIndex(0); setResponse(''); setAiPrompt(''); setAiResponse(''); setAiError(''); setAiUsed(false); setSubmitted(false); setResults([]); setResources({ time: 100, safety: 100, quality: 60, trust: 60, rework: 100, skill: 0 }); }
