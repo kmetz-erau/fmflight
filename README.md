@@ -1,40 +1,42 @@
-# Facilities AI Field Lab
+# Facilities AI Field Lab: FM Journey
 
-A repo-ready Next.js training prototype for facilities teams learning to use AI safely.
+An open-ended journey-style browser game that teaches practical AI habits for facilities and public-works crews.
 
-## What it includes
+## How to play
 
-- Twelve training labs: a supervisor module plus HVAC, BAS/controls, electrical, plumbing, fire/life safety, building envelope, custodial/IAQ, grounds/irrigation, fleet/equipment, roads/DOT, and water/wastewater.
-- Eight written-response AI-workflow demonstrations per lab. Learners practice a real job task, check the AI result, improve it, and explain what they kept or changed. Ollama grades each answer from 0–10 and returns strengths, missing elements, and an improvement suggestion.
-- A server-side `/api/chat` route that calls Ollama's `/api/chat` endpoint.
-- A server-side `/api/grade` route that grades written responses against the lab evidence and rubric.
-- Passing is deterministic: a response must receive at least 7/10 before the learner can advance, with no critical-risk flag.
-- Grading uses five fixed criteria scored 0–2: task framing, evidence grounding, uncertainty, risk boundary, and human review. Passing requires 7/10 and no critical-risk flag.
-- Completed modules include a print-ready results sheet with every written answer, score, and feedback.
-- Lab-specific evidence packs and conservative system prompts.
-- Practical Task → Try → Check → Keep exercises, CRAFT prompt guidance, risk-lane boundaries, stop conditions, and source-of-truth verification.
-- No Ollama URL or credential is exposed to the browser.
+You first choose a skilled-trade route: HVAC/BAS, Electrical, Plumbing, Carpentry/General Maintenance, or Grounds/Roads. The work calls and scenarios change with that choice. At each stop, you use the in-game FM AI Tool to write a prompt, receive an Ollama response, inspect it, and decide what to use. Each stop teaches one usable AI move—writing a clear prompt, finding missing information, comparing documents, preparing field questions, and setting a safe stop condition. You then type the move you would actually make and see the consequence for time, safety, crew trust, and AI skill. Starter buttons provide coaching prompts; they are not answer choices.
 
 ## Run locally
 
 ```bash
 npm install
 cp .env.example .env.local
-# Start Ollama separately, then download a model:
-ollama pull llama3.1:8b
 npm run dev
 ```
 
 Open `http://localhost:3000`.
 
-## Deploy with GitHub + Vercel GUI
+## Deploy with GitHub + Vercel
 
-1. Push this folder to a GitHub repository.
-2. In Vercel, choose **Add New → Project**, import the repository, and keep the detected Next.js settings.
-3. In **Project Settings → Environment Variables**, add:
-   - `OLLAMA_BASE_URL` — a URL reachable from Vercel, not `localhost`.
-   - `OLLAMA_MODEL` — for example `llama3.1:8b`.
-   - `OLLAMA_API_KEY` — optional bearer token if the endpoint requires authentication.
-4. Redeploy after changing either variable.
+Import the repository as a Next.js project. The repository includes `vercel.json` with the Next.js build command and `.next` output directory.
 
-For production, expose Ollama only through a secured network path and add authentication at that boundary. Do not place private facilities documents or live-system credentials in client-side code or public prompts.
+Use these Vercel settings:
+
+- Framework Preset: Next.js
+- Build Command: `npm run build`
+- Output Directory: `.next`
+- Root Directory: the folder containing `package.json`
+
+The game supports OpenRouter and Ollama. The scoring is local and intentionally checks for practical habits rather than trade-specific technical knowledge.
+
+## Ollama configuration
+
+The browser calls the included `/api/ollama` server route. Set these Vercel environment variables for the free OpenRouter route:
+
+- `AI_PROVIDER`: `openrouter`
+- `OPENROUTER_BASE_URL`: `https://openrouter.ai/api/v1`
+- `OPENROUTER_MODEL`: `openrouter/free`
+- `OPENROUTER_API_KEY`: your OpenRouter key
+- `OPENROUTER_SITE_URL`: optional deployed Vercel URL
+
+To switch back to Ollama, set `AI_PROVIDER=ollama` and use the `OLLAMA_*` variables instead.

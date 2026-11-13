@@ -1,0 +1,21 @@
+/* Final brand cleanup: this file loads after the legacy stylesheet. */
+.tradePicker .pickerGraphic{display:none!important}
+.tradePicker .eyebrow{font-size:0!important}
+.tradePicker .eyebrow:after{content:'FM JOURNEY · CHOOSE YOUR ROUTE';font-size:11px}
+.tradeCard strong{font-size:0!important}
+.tradeCard strong:after{content:'Start journey →';font-size:11px}
+.trailHeader .eyebrow{font-size:0!important}
+.trailHeader .eyebrow:after{content:'FM JOURNEY · YOUR ROUTE';font-size:11px}
+.trailHeader h1{font-size:0!important}
+.trailHeader h1:after{content:'FM Journey';font:700 clamp(42px,6vw,72px) 'Space Grotesk';letter-spacing:-3px}
+.topmeta{font-size:0!important}
+.topmeta:after{content:'FM JOURNEY\A OPEN-ENDED AI GAME';white-space:pre;font-size:11px;line-height:1.5}
+.incoming p{white-space:pre-line}
+.incoming span{font-size:0}
+.incoming span:after{content:'WORK ORDER';font-size:10px}
+.trailMeters>div:nth-child(3)>span{font-size:0}
+.trailMeters>div:nth-child(3)>span:after{content:'WORK QUALITY';font-size:10px}
+.trailStats>span:nth-child(3){font-size:0}
+.trailStats>span:nth-child(3):after{content:'work quality';font-size:13px}
+.outcomeBadge.good{font-size:0}.outcomeBadge.good:after{content:'WORK MOVE REVIEWED';font-size:10px}
+.evidencePhoto{height:190px;margin:14px 0 0;border:3px solid var(--gold);border-radius:8px;background-repeat:no-repeat;background-size:205% 205%;background-color:#dfe8ed;position:relative;overflow:hidden}.evidencePhoto:after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.08),transparent 45%,rgba(0,0,0,.18));pointer-events:none}.evidencePhoto figcaption{position:absolute;left:10px;bottom:9px;z-index:1;background:rgba(6,43,67,.88);color:#fff;padding:6px 8px;border-radius:4px;font:700 9px 'DM Sans';letter-spacing:1px}
