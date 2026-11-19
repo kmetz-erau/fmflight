@@ -1,42 +1,27 @@
-# Facilities AI Field Lab: FM Journey
+# FM Flight Career Mode v3 — homepage fix
 
-An open-ended journey-style browser game that teaches practical AI habits for facilities and public-works crews.
+This package fixes the issue where https://fmflight.vercel.app/ still opens the original game after Career Mode files are pushed.
 
-## How to play
+## What changes
 
-You first choose a skilled-trade route: HVAC/BAS, Electrical, Plumbing, Carpentry/General Maintenance, or Grounds/Roads. The work calls and scenarios change with that choice. At each stop, you use the in-game FM AI Tool to write a prompt, receive an Ollama response, inspect it, and decide what to use. Each stop teaches one usable AI move—writing a clear prompt, finding missing information, comparing documents, preparing field questions, and setting a safe stop condition. You then type the move you would actually make and see the consequence for time, safety, crew trust, and AI skill. Starter buttons provide coaching prompts; they are not answer choices.
+- `/` redirects to `/game`, the Career Mode dashboard.
+- `/game` is the full v2 gameplay package (missions, campus, operations, XP, saves).
+- The original homepage is preserved at `/training` by the installer.
+- The Career Mode **Original training** links now point to `/training` instead of `/` (which would loop back to the game).
 
-## Run locally
+## Recommended installation (keeps the original training game)
 
-```bash
-npm install
-cp .env.example .env.local
-npm run dev
-```
+1. Extract this ZIP anywhere outside your repository.
+2. Open a terminal in the extracted folder.
+3. Run: `node scripts/install.mjs /path/to/your/fmflight` (replace with your repository path). On Windows, use `node scripts/install.mjs "C:\\path\\to\\fmflight"`.
+4. In your repository, run `npm install` and `npm run dev`.
+5. Verify `/` redirects to `/game`, and `/training` still opens the original experience.
+6. Commit and push the updated files to GitHub. Vercel will deploy if its Git integration is enabled.
 
-Open `http://localhost:3000`.
+## Manual installation
 
-## Deploy with GitHub + Vercel
+Before copying files, MOVE your existing `app/page.jsx` to `app/training/page.jsx` (create the training directory). Then merge the ZIP's `app/` and `lib/` directories into your repository. Do not overwrite your original training page without preserving it.
 
-Import the repository as a Next.js project. The repository includes `vercel.json` with the Next.js build command and `.next` output directory.
+## Notes
 
-Use these Vercel settings:
-
-- Framework Preset: Next.js
-- Build Command: `npm run build`
-- Output Directory: `.next`
-- Root Directory: the folder containing `package.json`
-
-The game supports OpenRouter and Ollama. The scoring is local and intentionally checks for practical habits rather than trade-specific technical knowledge.
-
-## Ollama configuration
-
-The browser calls the included `/api/ollama` server route. Set these Vercel environment variables for the free OpenRouter route:
-
-- `AI_PROVIDER`: `openrouter`
-- `OPENROUTER_BASE_URL`: `https://openrouter.ai/api/v1`
-- `OPENROUTER_MODEL`: `openrouter/free`
-- `OPENROUTER_API_KEY`: your OpenRouter key
-- `OPENROUTER_SITE_URL`: optional deployed Vercel URL
-
-To switch back to Ollama, set `AI_PROVIDER=ollama` and use the `OLLAMA_*` variables instead.
+This package does **not** deploy itself. GitHub and Vercel need to receive the changed files. Existing browser save data uses the same `fmflight-career-full-v2` key. AI features still require the existing `/api/ollama` route and provider environment configuration. The code was packaged and statically checked, but a full browser and Vercel build test was not available here.
