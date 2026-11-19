@@ -1,29 +1,28 @@
-# FM Flight Career Mode — Gameplay v1
+# FM Flight — Full Career & Campus Game (v2)
 
-This add-on adds a playable career mode at `/game` without changing the existing FM Journey route.
+This package extends the existing `kmetz-erau/fmflight` Next.js 15 application without replacing the original training game.
 
 ## Install
 
-Copy the `app/game` directory into your existing `fmflight/app/` directory. Run `npm install` and `npm run dev`, then open `http://localhost:3000/game`.
+1. Copy `app/game/page.jsx` and `app/game/game.css` to the same paths in your repository.
+2. Copy `lib/game-data.js` into your repository's `lib/` folder.
+3. Keep your existing `app/api/ollama/route.js` and `.env.local` configuration.
+4. Run `npm install` and `npm run dev` from your repository root.
+5. Visit `http://localhost:3000/game`.
 
-## Included
+## Features
 
-- Trade selection (5 trades)
-- Campus dashboard and dispatch board
-- Seven interactive missions with evidence, decision points, written handoffs, and consequences
-- XP, leveling, career ranks, achievements, mission unlocks
-- Local browser persistence and reset
-- Optional AI tool panel that calls the existing `/api/ollama` endpoint
+- Six clickable campus buildings and filtered work-order dispatch
+- Twelve missions with gated difficulty and trade-neutral workplace evidence
+- Multiple-choice decision plus written handoff assessment; correct decision and sufficient handoff both required
+- XP, ranks, eight achievements, and mission replay without repeat XP farming
+- Operations budget, hiring, daily payroll, preventive maintenance, safety training, backlog, and rotating events
+- Operations log, local browser autosave, JSON save export/import, and migration from v1 saves
+- Existing `/api/ollama` AI assistant remains optional for each mission
+- Original application remains at `/`
 
-## Important limitations
+## Notes and limitations
 
-- This is a first playable release, not the complete management simulator.
-- The written handoff is required but **not automatically graded**. Mission success is based on the multiple-choice decision. The UI discloses this.
-- Progress is stored in localStorage on the same browser only, not in an account.
-- The AI panel depends on the repository's existing API configuration. If it is unavailable, the rest of the game works.
-- Trade choice changes the profile but does not yet change mission content.
-- No real-time timers, multiplayer, budgets, or staff simulation yet.
+This is a complete playable browser-game loop, not a 3D simulation or real-time multiplayer system. The six facilities are illustrated with interactive CSS cards rather than a 3D map. Mission writing is assessed with an explicitly heuristic local rubric, not by a qualified instructor or a validated assessment system. Trade selection changes the player's profile; missions are currently shared across trades. Save data is local to each browser unless exported. No authentication or leaderboard is included. The AI tool requires your existing configured provider.
 
-## Suggested next iteration
-
-Add trade-specific mission variants, grade written handoffs with the existing grading API, and introduce dispatch resource constraints.
+The management economy is intentionally lightweight; advancing a day can produce negative credits, and the scenario event sequence is deterministic for repeatable play. The game is a training exercise and cannot authorize real-world operational actions.
