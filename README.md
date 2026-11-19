@@ -1,36 +1,20 @@
-# FM Flight v6 — Training Route + Home / Choose Trade Fix
+# Restore the actual original FM Journey
 
-## Changes
+The earlier v6 package inadvertently installed a simplified 5 KB fallback. This package restores the **full historical ~49 KB original** from the Git repository, rather than supplying a substitute.
 
-- Includes **`app/training/page.jsx`** so `/training` is no longer a missing Next.js route.
-- The installer attempts to restore the **exact historical FM Journey** from your local Git history. If the original commit is unavailable, a functional seven-stop training fallback is included instead.
-- **Home / Choose trade** in AI Academy returns to the trade picker without deleting XP, mission history, or achievements.
-- **Home / Choose trade** in original training links to `/game?chooseTrade=1`, which opens the trade picker.
-- The homepage `/` still redirects to `/game`.
+## Install
 
-## Installation (recommended)
+1. Extract this ZIP.
+2. Open a terminal in your **local `fmflight` Git clone** (with its full Git history).
+3. Run `node /path/to/extracted/scripts/restore-original.mjs .` (replace the script path with its real location).
+4. Run `npm run build`.
+5. Run `git add app/training/page.jsx app/training/layout.jsx && git commit -m "Restore full original FM Journey" && git push origin main`.
+6. Wait for Vercel to deploy and visit `https://fmflight.vercel.app/training`.
 
-From a local clone of `kmetz-erau/fmflight`:
+The installer backs up the current training page to `app/training/page.jsx.pre-restore-backup` (not committed). It restores the full original `app/page.jsx` from Git object `dba7789ef0bba638fc8c4f3a7a89ba2d98f3ec9a`, originally committed before the game redesign. It also adds a Home / Choose trade link back to `/game?chooseTrade=1`.
 
-```bash
-node /path/to/extracted/fmflight-ai-academy-v6/scripts/install.mjs /path/to/fmflight
-cd /path/to/fmflight
-npm install
-npm run build
-git add app lib
-git commit -m "Restore training route and return home to trade selection"
-git push origin main
-```
+It **does not change** `app/page.jsx`, `app/game`, `lib`, or your API routes. If the historical source cannot be found, it stops with an error rather than silently substituting a simplified page.
 
-Alternatively copy the included `app/` and `lib/` directories into your repository, preserving other files. This manual option installs the fallback training page; the installer is recommended for restoring the exact original from Git history.
+## Note
 
-## Verify
-
-- `/` redirects to `/game`.
-- `/game` shows trade selection for a new player.
-- Choose a trade, then click **Home / Choose trade**: trade selection should reappear.
-- `/training` loads a training page (no 404).
-- Click **Home / Choose trade** in training: trade selection should reappear.
-- Return to a previously played trade: XP and completed missions should remain saved.
-
-Note: No live Vercel deployment or browser integration test was performed here.
+This ZIP contains a restoration script, not the original page itself. A full local Git clone is required. If you have only downloaded GitHub ZIP snapshots, clone the repository with Git first.
