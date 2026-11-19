@@ -1,27 +1,28 @@
-# FM Flight AI Detective — wrong-answer feedback v6
+# FM Flight AI Detective v7 — visible wrong-answer feedback
 
-The live GitHub page was checked: its `evaluate()` function returned silently for incorrect choices. This fixes that behavior.
+This is a **complete replacement file** for `app/quest/page.jsx`, not a patch installer. It retains the original-work-order reference in Field Handoff and changes AI Detective so pressing **Check my findings** always displays a result, including when no claims were selected.
 
-## Preferred installation (preserves your existing changes)
+## Install (important)
 
-From the extracted ZIP folder, run:
+1. Open your local `fmflight` repository.
+2. Back up `app/quest/page.jsx`.
+3. Copy this ZIP's `app/quest/page.jsx` over that exact path in the repository. Do not place the ZIP or an extra folder inside `app/quest`.
+4. Check the installed file contains the text `WRONG SELECTION` and `MISSED MISTAKE`.
+5. Run `npm run build`.
+6. Commit and push **the actual changed file**:
 
 ```bash
-node scripts/install.mjs /path/to/your/fmflight
+git add app/quest/page.jsx
+git commit -m "Show wrong-answer feedback in AI Detective"
+git push origin main
 ```
 
-The installer edits only `app/quest/page.jsx` and creates `app/quest/page.jsx.before-detective-v6.bak`. It expects the unpatched Detective logic found in the repository on Nov 19, 2026; it stops without editing if the expected code has changed. If it detects the older feedback patch, do not use the replacement blindly; reconcile changes manually.
+7. Confirm Vercel deployed the latest commit and refresh `https://fmflight.vercel.app/quest` (Ctrl+Shift+R).
 
-## Alternative
+## Verify
 
-`replacement/app/quest/page.jsx` is a complete, patched version based on the inspected game page. Copy it to `app/quest/page.jsx` only if you prefer replacing the whole page; doing so can overwrite later edits.
+Enter a mission, reach AI Detective, deliberately flag a supported claim, and click **Check my findings**. A prominent red `Not quite — check your selections` panel should appear with wrong-selection and missed-mistake counts. The claims show red `WRONG SELECTION` or `MISSED MISTAKE` messages. Adjust selections and try again.
 
-## Behavior
+If the live site does not show this, inspect `app/quest/page.jsx` on GitHub main and confirm it contains `WRONG SELECTION`. If it doesn't, the updated file was not pushed. If it does, verify Vercel is deploying the same repo/branch and that the latest deployment succeeded.
 
-After selecting claims, press **Check my findings**. If incorrect, the scorecard shows a red Detective Review message, counts missed problems and false positives, and annotates mistaken selections. Players can correct selections and retry. Successful checks show explanations and unlock Field Handoff. No changes to other game routes or training.
-
-## Deploy
-
-Run `npm run build`, commit and push the modified `app/quest/page.jsx`, and wait for Vercel deployment. Hard refresh `/quest` after deployment.
-
-This package was tested by applying its installer to a local copy of the inspected source. It has not been browser-playtested or deployed.
+This package was source-checked and ZIP-verified; it has not been browser-playtested or deployed by the assistant. Replacing this file may overwrite unrelated edits made after the supplied source snapshot.
