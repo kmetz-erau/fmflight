@@ -1,39 +1,17 @@
-# FM Flight — AI Quest (new interactive game)
+# FM Flight AI Quest - Field Handoff work order visibility fix
 
-This package adds a **new playable game at `/quest`** and makes it the default homepage. It does **not** overwrite the existing AI Academy (`/game`) or original FM Journey (`/training`).
+The live GitHub source already contains a reference to the original work order in the left column. This update also pins a highly visible, always-expanded dispatch card in the right-hand Field Handoff sidebar, immediately above Mission Debrief. It shows the original scenario, mission title, location, trade, deliverable, and expandable collected evidence.
 
 ## Install
 
-1. Extract this ZIP.
-2. Copy its `app` and `lib` folders into the root of your existing `fmflight` repository, merging folders and replacing only matching files. The package contains `app/page.jsx`, `app/quest/page.jsx`, `app/quest/quest.css`, and `lib/academy-data.js`.
-3. Run `npm install` and `npm run build` in your repository.
-4. Commit and push; wait for Vercel to deploy.
-5. Visit `/` or `/quest` to play. `/game` and `/training` remain accessible if their existing files are present.
+Extract this ZIP. From the extracted folder, run:
 
-## Gameplay
+```bash
+node scripts/install.mjs /path/to/your/fmflight
+```
 
-- Choose one of five trades.
-- Explore a 12-location clickable campus mission map.
-- Investigate six evidence cards per mission; four are relevant, two are distractions.
-- Build a five-part CRAFT prompt or write a complete advanced prompt.
-- Optionally call the existing `/api/ollama` AI endpoint; the main AI Detective exercise intentionally uses a simulated flawed response for consistent teaching.
-- Flag unsupported AI claims and explain why they are problematic.
-- Create a field-ready handoff and earn 1–3 stars, XP, and unlocks.
-- Save progress automatically in the browser; choose another trade with the Home button without deleting XP.
+Or run `node /path/to/extracted/scripts/install.mjs .` from your local FM Flight repository root.
 
-## Important notes
+Then run `npm run build`, review the Field Handoff stage, and commit/push `app/quest/page.jsx` to GitHub. Vercel must deploy the new commit before the live site changes.
 
-- This is educational gameplay, not permission to perform physical repairs or hazardous work.
-- Mission grading is a transparent heuristic, not a validated assessment of trade competency. The simulated AI claims are intentionally wrong.
-- This package does not restore a missing `/training/page.jsx`; if that route is absent, restore the actual original page separately from Git history.
-- No server, authentication, or database is required for the game. Live AI is optional and uses the preexisting API route.
-
-
-## v2: AI Workbench redesign
-The old five-field CRAFT worksheet is replaced by a game-style evidence and tool loadout. Players equip evidence files and tool cards, see a live instruction console, and launch the AI. A custom prompt override remains available for experienced players. The existing mission loop, API integration, progress saves, and original routes are unchanged. Replace `app/quest/page.jsx` and `app/quest/quest.css` with the included files.
-
-
-## v3 Field Handoff fix
-At the Field Handoff stage, the original work order is displayed above the writing area, including the mission title, full trade-specific dispatch brief, location, trade, and requested deliverable. A collapsible evidence review shows all clues examined earlier. The handoff remains editable and progress is preserved.
-
-To update an existing v2 installation, replace only `app/quest/page.jsx` and `app/quest/quest.css` with the files in this archive. No changes to `/training` or `/game` are needed.
+The installer modifies only `app/quest/page.jsx`, backs it up to `app/quest/page.jsx.before-handoff-fix.bak`, and is safe to run again. It does not modify the original training page or AI Academy. Do not commit the `.bak` file.
