@@ -1,40 +1,24 @@
-# FM Flight — AI Field Academy (v4)
+# FM Flight v5 — Original training restored + Home button
 
-This update restores the original mission: teach skilled tradespeople to use AI effectively and safely. It replaces the `/game` experience with a mission-based AI skills academy and retains the original `/training` route.
+This patch fixes the broken **Original training** link in v4 and adds an explicit **Home** button to the AI Academy and the original training page. The Academy remains at `/game`, the homepage redirects to `/game`, and the original FM Journey is restored at `/training`.
 
-## Install into the existing `kmetz-erau/fmflight` Next.js repository
+## Installation (important)
 
-Copy these paths into your repository, overwriting the existing files of the same names:
+The original training page is ~49 KB and was accidentally omitted from the v4 package. To restore the exact original rather than replacing it with a simplified copy, this installer reads its original Git blob from your existing repository history.
 
-- `app/page.jsx` — redirects the homepage to `/game` (unchanged from v3)
-- `app/game/page.jsx` — new AI literacy game
-- `app/game/academy.css` — new academy styling
-- `app/game/game.css` — preserved existing CSS import
-- `lib/academy-data.js` — missions, trade profiles, achievements
+1. Extract this ZIP **outside** your local `fmflight` repository.
+2. Open a terminal in the extracted folder.
+3. Run `node scripts/install.mjs /path/to/your/fmflight` (Windows example: `node scripts/install.mjs C:\Users\you\projects\fmflight`).
+4. In your `fmflight` directory, run `npm run build`.
+5. Commit and push the changes to GitHub. Vercel will redeploy if connected.
 
-**Do not delete any other files**. Keep `app/api/ollama/route.js`, `app/training`, `lib/labs.js`, and the existing package files. The new game uses the current `/api/ollama` endpoint. Ensure your OpenRouter or Ollama environment variables are configured in Vercel.
+**Do not simply copy the files:** The installer creates `app/training/page.jsx` from the original Git history; copying the package alone will leave `/training` broken. The installer aborts before changing files if it cannot locate the original page.
 
-Run `npm install && npm run build`, then `npm run dev` and open `http://localhost:3000`.
+## Verify
 
-## What is playable
+- `/` redirects to `/game`.
+- `/game` opens the AI Academy; its Home button returns to the Academy dashboard without losing saved XP.
+- `/training` opens the original seven-stop FM Journey; its Home button returns to `/game`.
+- Both experiences still use the existing `/api/ollama` endpoint.
 
-- Five trade-specific pathways
-- Twelve missions covering prompting, verification, document comparison, safe AI use, and workflows
-- Four-step Task → Try → Check → Keep loop
-- Real calls to your existing FM AI Tool; an available AI provider is required to complete missions
-- CRAFT prompt-writing checklist, critique questions, final work product, formative automated feedback
-- XP, levels, mission unlocks, eight badges, local browser save and JSON export/import
-
-## Important limitations
-
-The automated grading is an explainable heuristic, not a verified assessment of technical competence. It does not certify safe operation or authorize work. It rewards prompt structure and explicit verification habits; a human instructor should review safety-critical responses. Browser storage is device-local. AI API availability depends on the existing provider configuration.
-
-## Smoke test
-
-1. Choose HVAC / BAS; open the first mission.
-2. Write a CRAFT prompt containing context, task, format, truth-check, and human review.
-3. Run the FM AI Tool; confirm the response appears.
-4. Select facts vs assumptions, source verification, and human ownership.
-5. Submit a work product with facts, unknowns, check, owner, and stop condition.
-6. Confirm XP is awarded, refresh, and confirm progress persists.
-7. Confirm `/training` still opens the original training experience.
+The package does not overwrite your AI API, credentials, or Next.js config.
