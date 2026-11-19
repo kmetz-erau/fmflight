@@ -1,27 +1,40 @@
-# FM Flight Career Mode v3 — homepage fix
+# FM Flight — AI Field Academy (v4)
 
-This package fixes the issue where https://fmflight.vercel.app/ still opens the original game after Career Mode files are pushed.
+This update restores the original mission: teach skilled tradespeople to use AI effectively and safely. It replaces the `/game` experience with a mission-based AI skills academy and retains the original `/training` route.
 
-## What changes
+## Install into the existing `kmetz-erau/fmflight` Next.js repository
 
-- `/` redirects to `/game`, the Career Mode dashboard.
-- `/game` is the full v2 gameplay package (missions, campus, operations, XP, saves).
-- The original homepage is preserved at `/training` by the installer.
-- The Career Mode **Original training** links now point to `/training` instead of `/` (which would loop back to the game).
+Copy these paths into your repository, overwriting the existing files of the same names:
 
-## Recommended installation (keeps the original training game)
+- `app/page.jsx` — redirects the homepage to `/game` (unchanged from v3)
+- `app/game/page.jsx` — new AI literacy game
+- `app/game/academy.css` — new academy styling
+- `app/game/game.css` — preserved existing CSS import
+- `lib/academy-data.js` — missions, trade profiles, achievements
 
-1. Extract this ZIP anywhere outside your repository.
-2. Open a terminal in the extracted folder.
-3. Run: `node scripts/install.mjs /path/to/your/fmflight` (replace with your repository path). On Windows, use `node scripts/install.mjs "C:\\path\\to\\fmflight"`.
-4. In your repository, run `npm install` and `npm run dev`.
-5. Verify `/` redirects to `/game`, and `/training` still opens the original experience.
-6. Commit and push the updated files to GitHub. Vercel will deploy if its Git integration is enabled.
+**Do not delete any other files**. Keep `app/api/ollama/route.js`, `app/training`, `lib/labs.js`, and the existing package files. The new game uses the current `/api/ollama` endpoint. Ensure your OpenRouter or Ollama environment variables are configured in Vercel.
 
-## Manual installation
+Run `npm install && npm run build`, then `npm run dev` and open `http://localhost:3000`.
 
-Before copying files, MOVE your existing `app/page.jsx` to `app/training/page.jsx` (create the training directory). Then merge the ZIP's `app/` and `lib/` directories into your repository. Do not overwrite your original training page without preserving it.
+## What is playable
 
-## Notes
+- Five trade-specific pathways
+- Twelve missions covering prompting, verification, document comparison, safe AI use, and workflows
+- Four-step Task → Try → Check → Keep loop
+- Real calls to your existing FM AI Tool; an available AI provider is required to complete missions
+- CRAFT prompt-writing checklist, critique questions, final work product, formative automated feedback
+- XP, levels, mission unlocks, eight badges, local browser save and JSON export/import
 
-This package does **not** deploy itself. GitHub and Vercel need to receive the changed files. Existing browser save data uses the same `fmflight-career-full-v2` key. AI features still require the existing `/api/ollama` route and provider environment configuration. The code was packaged and statically checked, but a full browser and Vercel build test was not available here.
+## Important limitations
+
+The automated grading is an explainable heuristic, not a verified assessment of technical competence. It does not certify safe operation or authorize work. It rewards prompt structure and explicit verification habits; a human instructor should review safety-critical responses. Browser storage is device-local. AI API availability depends on the existing provider configuration.
+
+## Smoke test
+
+1. Choose HVAC / BAS; open the first mission.
+2. Write a CRAFT prompt containing context, task, format, truth-check, and human review.
+3. Run the FM AI Tool; confirm the response appears.
+4. Select facts vs assumptions, source verification, and human ownership.
+5. Submit a work product with facts, unknowns, check, owner, and stop condition.
+6. Confirm XP is awarded, refresh, and confirm progress persists.
+7. Confirm `/training` still opens the original training experience.
