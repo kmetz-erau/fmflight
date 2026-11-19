@@ -1,5 +1,2 @@
-import { redirect } from 'next/navigation';
-
-export default function Home() {
-  redirect('/game');
-}
+import {redirect} from 'next/navigation';
+export default function Home(){redirect('/quest')}
