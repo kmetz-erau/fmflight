@@ -2,3 +2,18 @@
 
 /* AI Workbench: equipment loadout instead of classroom form */
 .q-bench-banner{display:flex;align-items:center;gap:14px;background:linear-gradient(110deg,#19484b,#143248);border:1px solid #438b83;border-radius:14px;padding:16px;margin:18px 0 24px}.q-bench-banner>span{font-size:2.4rem}.q-bench-banner>div{display:flex;flex-direction:column;gap:4px;flex:1}.q-bench-banner small{color:#b5d6d7}.q-bench-banner>b{color:#a1f8d9;font-size:.75rem}.q-bench-title{font-size:1.05rem;margin:22px 0 12px;display:flex;flex-wrap:wrap;align-items:center;gap:12px}.q-bench-title small{font-size:.72rem;color:#8eaab9;font-weight:500}.q-loadout-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.q-loadout-card{display:flex;flex-direction:column;gap:6px;text-align:left;min-height:125px;background:#172e41;border:2px solid #31546a;color:#f1fbff;border-radius:13px;padding:15px;transition:transform .15s,border-color .15s,background .15s}.q-loadout-card:hover{transform:translateY(-2px);border-color:#7ed6bf}.q-loadout-card>span{font-size:1.7rem}.q-loadout-card strong{font-size:.89rem}.q-loadout-card small{font-size:.73rem;color:#9dbbc9}.q-loadout-card em{font-size:.69rem;color:#7ae6bf;font-weight:900;font-style:normal;margin-top:auto}.q-loadout-card.equipped{background:linear-gradient(140deg,#21544e,#1b3948);border-color:#6ee8bf;box-shadow:inset 0 0 0 1px #6ee8bf33}.q-loadout-card.equipped small:last-child{color:#86f4ca}.q-bench-screen{background:#071a23;border:1px solid #326d66;border-radius:13px;padding:15px;box-shadow:inset 0 0 26px #0b443e66}.q-bench-led{font-size:.69rem;font-weight:900;letter-spacing:.13em;color:#65f3b4}.q-bench-screen pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:.73rem;line-height:1.65;color:#c5e4df;max-height:330px;overflow:auto}.q-bench-stats{display:flex;gap:8px;flex-wrap:wrap}.q-bench-stats span{padding:8px 10px;background:#1b3b49;border-radius:8px;font-size:.72rem}.q-bench-stats b{color:#82f0c5}.q-bench-rating{padding:11px;border:1px solid #396a63;border-radius:9px;color:#a5ebd1;font-size:.8rem}@media(max-width:650px){.q-loadout-grid{grid-template-columns:1fr 1fr}.q-bench-banner{flex-wrap:wrap}.q-bench-banner>b{width:100%}}
+
+/* Original work order remains available at the Field Handoff stage. */
+.q-handoff-reference{margin:20px 0 22px;padding:20px;border:1px solid #477d88;border-radius:16px;background:linear-gradient(135deg,rgba(24,80,91,.28),rgba(10,31,46,.55));color:inherit}
+.q-handoff-reference-head,.q-handoff-reference-meta{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.q-handoff-reference-id{font-size:12px;opacity:.7;font-weight:700}
+.q-handoff-reference h3{font-size:1.22rem;margin:12px 0 8px}
+.q-handoff-reference-brief{white-space:pre-wrap;line-height:1.65;margin:0 0 15px}
+.q-handoff-reference-meta{justify-content:flex-start;font-size:12px;opacity:.85;margin-bottom:10px}
+.q-handoff-reference-meta span{padding:5px 9px;border:1px solid rgba(126,192,190,.25);border-radius:7px}
+.q-handoff-evidence{margin-top:15px;border-top:1px solid rgba(126,192,190,.25);padding-top:12px}
+.q-handoff-evidence summary{cursor:pointer;font-weight:700}
+.q-handoff-evidence-list{display:grid;gap:10px;margin-top:12px}
+.q-handoff-evidence-item{padding:12px;border:1px solid rgba(126,192,190,.18);border-radius:9px}
+.q-handoff-evidence-item small{display:block;opacity:.65;margin-top:4px}
+.q-handoff-evidence-item p{margin:8px 0 0;line-height:1.5}

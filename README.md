@@ -31,3 +31,9 @@ This package adds a **new playable game at `/quest`** and makes it the default h
 
 ## v2: AI Workbench redesign
 The old five-field CRAFT worksheet is replaced by a game-style evidence and tool loadout. Players equip evidence files and tool cards, see a live instruction console, and launch the AI. A custom prompt override remains available for experienced players. The existing mission loop, API integration, progress saves, and original routes are unchanged. Replace `app/quest/page.jsx` and `app/quest/quest.css` with the included files.
+
+
+## v3 Field Handoff fix
+At the Field Handoff stage, the original work order is displayed above the writing area, including the mission title, full trade-specific dispatch brief, location, trade, and requested deliverable. A collapsible evidence review shows all clues examined earlier. The handoff remains editable and progress is preserved.
+
+To update an existing v2 installation, replace only `app/quest/page.jsx` and `app/quest/quest.css` with the files in this archive. No changes to `/training` or `/game` are needed.
