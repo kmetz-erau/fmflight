@@ -1,17 +1,27 @@
-# FM Flight AI Quest - Field Handoff work order visibility fix
+# FM Flight AI Detective — wrong-answer feedback v6
 
-The live GitHub source already contains a reference to the original work order in the left column. This update also pins a highly visible, always-expanded dispatch card in the right-hand Field Handoff sidebar, immediately above Mission Debrief. It shows the original scenario, mission title, location, trade, deliverable, and expandable collected evidence.
+The live GitHub page was checked: its `evaluate()` function returned silently for incorrect choices. This fixes that behavior.
 
-## Install
+## Preferred installation (preserves your existing changes)
 
-Extract this ZIP. From the extracted folder, run:
+From the extracted ZIP folder, run:
 
 ```bash
 node scripts/install.mjs /path/to/your/fmflight
 ```
 
-Or run `node /path/to/extracted/scripts/install.mjs .` from your local FM Flight repository root.
+The installer edits only `app/quest/page.jsx` and creates `app/quest/page.jsx.before-detective-v6.bak`. It expects the unpatched Detective logic found in the repository on Nov 19, 2026; it stops without editing if the expected code has changed. If it detects the older feedback patch, do not use the replacement blindly; reconcile changes manually.
 
-Then run `npm run build`, review the Field Handoff stage, and commit/push `app/quest/page.jsx` to GitHub. Vercel must deploy the new commit before the live site changes.
+## Alternative
 
-The installer modifies only `app/quest/page.jsx`, backs it up to `app/quest/page.jsx.before-handoff-fix.bak`, and is safe to run again. It does not modify the original training page or AI Academy. Do not commit the `.bak` file.
+`replacement/app/quest/page.jsx` is a complete, patched version based on the inspected game page. Copy it to `app/quest/page.jsx` only if you prefer replacing the whole page; doing so can overwrite later edits.
+
+## Behavior
+
+After selecting claims, press **Check my findings**. If incorrect, the scorecard shows a red Detective Review message, counts missed problems and false positives, and annotates mistaken selections. Players can correct selections and retry. Successful checks show explanations and unlock Field Handoff. No changes to other game routes or training.
+
+## Deploy
+
+Run `npm run build`, commit and push the modified `app/quest/page.jsx`, and wait for Vercel deployment. Hard refresh `/quest` after deployment.
+
+This package was tested by applying its installer to a local copy of the inspected source. It has not been browser-playtested or deployed.
