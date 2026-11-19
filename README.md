@@ -27,3 +27,7 @@ This package adds a **new playable game at `/quest`** and makes it the default h
 - Mission grading is a transparent heuristic, not a validated assessment of trade competency. The simulated AI claims are intentionally wrong.
 - This package does not restore a missing `/training/page.jsx`; if that route is absent, restore the actual original page separately from Git history.
 - No server, authentication, or database is required for the game. Live AI is optional and uses the preexisting API route.
+
+
+## v2: AI Workbench redesign
+The old five-field CRAFT worksheet is replaced by a game-style evidence and tool loadout. Players equip evidence files and tool cards, see a live instruction console, and launch the AI. A custom prompt override remains available for experienced players. The existing mission loop, API integration, progress saves, and original routes are unchanged. Replace `app/quest/page.jsx` and `app/quest/quest.css` with the included files.
