@@ -1,24 +1,36 @@
-# FM Flight v5 — Original training restored + Home button
+# FM Flight v6 — Training Route + Home / Choose Trade Fix
 
-This patch fixes the broken **Original training** link in v4 and adds an explicit **Home** button to the AI Academy and the original training page. The Academy remains at `/game`, the homepage redirects to `/game`, and the original FM Journey is restored at `/training`.
+## Changes
 
-## Installation (important)
+- Includes **`app/training/page.jsx`** so `/training` is no longer a missing Next.js route.
+- The installer attempts to restore the **exact historical FM Journey** from your local Git history. If the original commit is unavailable, a functional seven-stop training fallback is included instead.
+- **Home / Choose trade** in AI Academy returns to the trade picker without deleting XP, mission history, or achievements.
+- **Home / Choose trade** in original training links to `/game?chooseTrade=1`, which opens the trade picker.
+- The homepage `/` still redirects to `/game`.
 
-The original training page is ~49 KB and was accidentally omitted from the v4 package. To restore the exact original rather than replacing it with a simplified copy, this installer reads its original Git blob from your existing repository history.
+## Installation (recommended)
 
-1. Extract this ZIP **outside** your local `fmflight` repository.
-2. Open a terminal in the extracted folder.
-3. Run `node scripts/install.mjs /path/to/your/fmflight` (Windows example: `node scripts/install.mjs C:\Users\you\projects\fmflight`).
-4. In your `fmflight` directory, run `npm run build`.
-5. Commit and push the changes to GitHub. Vercel will redeploy if connected.
+From a local clone of `kmetz-erau/fmflight`:
 
-**Do not simply copy the files:** The installer creates `app/training/page.jsx` from the original Git history; copying the package alone will leave `/training` broken. The installer aborts before changing files if it cannot locate the original page.
+```bash
+node /path/to/extracted/fmflight-ai-academy-v6/scripts/install.mjs /path/to/fmflight
+cd /path/to/fmflight
+npm install
+npm run build
+git add app lib
+git commit -m "Restore training route and return home to trade selection"
+git push origin main
+```
+
+Alternatively copy the included `app/` and `lib/` directories into your repository, preserving other files. This manual option installs the fallback training page; the installer is recommended for restoring the exact original from Git history.
 
 ## Verify
 
 - `/` redirects to `/game`.
-- `/game` opens the AI Academy; its Home button returns to the Academy dashboard without losing saved XP.
-- `/training` opens the original seven-stop FM Journey; its Home button returns to `/game`.
-- Both experiences still use the existing `/api/ollama` endpoint.
+- `/game` shows trade selection for a new player.
+- Choose a trade, then click **Home / Choose trade**: trade selection should reappear.
+- `/training` loads a training page (no 404).
+- Click **Home / Choose trade** in training: trade selection should reappear.
+- Return to a previously played trade: XP and completed missions should remain saved.
 
-The package does not overwrite your AI API, credentials, or Next.js config.
+Note: No live Vercel deployment or browser integration test was performed here.
