@@ -1,0 +1,85 @@
+'use client';
+import {useEffect,useMemo,useState} from 'react';
+import {TRADES} from '../../lib/academy-data';
+import './workspace.css';
+
+const STORAGE='fmflight-workspace-v1';
+const BASE=[
+ {id:'history',title:'Recurring equipment complaints',type:'Maintenance history',task:'Identify recurring complaints, distinguish patterns from causes, and prepare questions for the next inspection.',docs:[
+  {name:'WO-26091 · Sep 03',body:'Science Building Room 214, RTU-3. Occupant reports room warm in afternoon. Dispatch noted 78°F against 72°F setpoint. No verified airflow reading. Status: pending follow-up.'},
+  {name:'WO-26137 · Sep 19',body:'Science Building Room 214, RTU-3. Similar comfort complaint. BAS command shown at 100%; physical damper position not checked. No diagnosis documented.'},
+  {name:'WO-26204 · Oct 11',body:'Science Building Room 214, RTU-3. Occupant called again. BAS trend screenshot attached without timestamp. No confirmed field measurement.'},
+  {name:'WO-26312 · Nov 07',body:'Science Building Room 214. Equipment record references RTU-3A while ticket says RTU-3. Dispatch requested asset verification.'}
+ ],output:'Source-grounded recurring-complaint briefing'},
+ {id:'records',title:'Conflicting equipment records',type:'Document comparison',task:'Compare the records, list discrepancies, and propose a verification handoff without assuming either record is correct.',docs:[
+  {name:'Work order · WO-26411',body:'West Wing Room 118. Electrical panel W-1. Lighting complaints following portable heater use. Caller reported damp ceiling tile. No qualified assessment recorded.'},
+  {name:'Panel schedule · Rev B',body:'Panel W-1 labeled West Wing Room 118 Annex. Revision date 2023-08-14. Circuit identifiers differ from current work order.'},
+  {name:'Asset register · Export',body:'Panel W-1A assigned to West Wing Room 118. Last location verification field is blank.'}
+ ],output:'Discrepancy table and source-verification questions'},
+ {id:'vendor',title:'Vendor clarification request',type:'Vendor communication',task:'Draft a professional vendor clarification email without inventing model-specific part numbers.',docs:[
+  {name:'Vendor email · Nov 13',body:'Vendor suggests actuator replacement for RTU-3 but asks for exact model, serial number, and installed actuator identification.'},
+  {name:'Equipment photo note',body:'Nameplate is obscured in the provided image. Model and serial number cannot be read.'},
+  {name:'Purchasing note',body:'No OEM-approved replacement number is verified. Procurement approval has not been issued.'}
+ ],output:'Vendor email requesting missing identifiers'},
+ {id:'handoff',title:'Next-shift work order handoff',type:'Shift communication',task:'Turn the scattered notes into a concise handoff with reported facts, unknowns, next checks, and a qualified owner.',docs:[
+  {name:'Dispatch ticket · WO-26488',body:'Loading Dock 2, Pump P-2. Water pooling reported near a receptacle. Source of water unknown. Area status not confirmed.'},
+  {name:'Shift log',body:'Crew did not complete an inspection or identify a leak source. No repair recorded.'},
+  {name:'Supervisor note',body:'Follow approved site procedures. Qualified staff must determine isolation, access, and next actions. Escalation pending.'}
+ ],output:'Crew-ready shift handoff'}
+ ];
+const TEMPLATES={
+ hvac:['Maintenance history analyzer','BAS trend question builder','Vendor clarification'],
+ electrical:['Panel schedule discrepancy finder','Inspection note organizer','Vendor questions'],
+ plumbing:['Leak report organizer','Inspection history summarizer','Materials clarification'],
+ carpentry:['Door service-history summary','Work-order organizer','Shift briefing'],
+ grounds:['Site inspection summary','Crew briefing builder','Storm-preparation questions']
+};
+const DEFAULT={trade:'',records:[],saved:[],submissions:[]};
+const badInput=/(password|passcode|access code|door code|pin number|social security|ssn|api key|secret key|badge number|phone number|personal email|credential)/i;
+const criteria=[
+ ['Task clarity',/(summarize|compare|prepare|draft|create|identify|write|list|organize)/i],
+ ['Source grounding',/(record|source|document|provided|cite|evidence|note)/i],
+ ['Output format',/(table|checklist|brief|email|bullets|sections|handoff)/i],
+ ['Unknowns and verification',/(unknown|unverified|verify|confirm|missing|assumption|qualified|review)/i]
+];
+function reviewText(s){const found=criteria.map(([name,rx])=>({name,ok:rx.test(s)}));return {found,score:found.filter(x=>x.ok).length*25}}
+export default function Workspace(){
+ const [store,setStore]=useState(DEFAULT),[loaded,setLoaded]=useState(false),[jobId,setJobId]=useState('history'),[mode,setMode]=useState('guided'),[custom,setCustom]=useState(''),[docIds,setDocIds]=useState([]),[messages,setMessages]=useState([]),[draft,setDraft]=useState(''),[answer,setAnswer]=useState(''),[final,setFinal]=useState(''),[busy,setBusy]=useState(false),[error,setError]=useState(''),[feedback,setFeedback]=useState(false),[reviewer,setReviewer]=useState(''),[reviewNote,setReviewNote]=useState(''),[tab,setTab]=useState('work');
+ useEffect(()=>{try{const x=JSON.parse(localStorage.getItem(STORAGE)||'{}');setStore({...DEFAULT,...x})}catch{}setLoaded(true)},[]);
+ useEffect(()=>{if(loaded)localStorage.setItem(STORAGE,JSON.stringify(store))},[store,loaded]);
+ const job=BASE.find(j=>j.id===jobId)||BASE[0],trade=TRADES.find(t=>t.id===store.trade);
+ const docs=useMemo(()=>custom.trim()?[{name:'Sanitized practice work order',body:custom.trim()}]:job.docs,[job,custom]);
+ const attached=docs.filter((d,i)=>docIds.includes(i));
+ const promptReview=reviewText(draft),finalReview=reviewText(final);
+ function reset(){setMessages([]);setDraft('');setAnswer('');setFinal('');setDocIds([]);setError('');setFeedback(false)}
+ function changeJob(id){setJobId(id);setCustom('');reset();setTab('work')}
+ function sample(){setDraft('Using only the attached records, '+job.task+' Format the answer as a short '+job.output.toLowerCase()+'. Cite the relevant source for each claim, separate reported facts from unknowns, list verification questions, and leave technical decisions to qualified personnel. Do not invent readings, diagnoses, or part numbers.')}
+ async function send(){
+  if(!draft.trim()||busy)return;
+  if(badInput.test(custom)){setError('Possible sensitive information detected in your custom work order. Remove personal, access, or credential details before continuing.');return}
+  setBusy(true);setError('');
+  try{
+   const history=messages.slice(-4).map(m=>'Technician: '+m.prompt+'\nBOLT: '+m.reply).join('\n\n');
+   const scenario=['Fictional FM Flight training case: '+job.title,'Task: '+job.task,...attached.map(d=>d.name+': '+d.body),'Conversation history:\n'+history,'Treat records as reported; identify unknowns. Do not authorize hazardous work.'].join('\n\n');
+   const r=await fetch('/api/ollama',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:draft,scenario})});
+   const j=await r.json();if(!r.ok)throw Error(j.error||'AI service unavailable');
+   const reply=String(j.response||'').trim();if(!reply)throw Error('AI returned no content');
+   setMessages(v=>[...v,{prompt:draft,reply}].slice(-8));setAnswer(reply);
+  }catch(e){setError(String(e.message)+' — No simulated response was substituted.')}finally{setBusy(false)}
+ }
+ function savePrompt(){if(!draft.trim())return;setStore(v=>({...v,saved:[{id:Date.now(),trade:trade?.name||'General',name:job.title,prompt:draft},...v.saved].slice(0,30)}))}
+ function submit(){if(final.trim().length<50)return;setFeedback(true);setStore(v=>({...v,submissions:[{id:Date.now(),date:new Date().toISOString(),job:job.title,trade:trade?.name||'General',prompt:draft,output:final,score:finalReview.score,reviewer:'',note:''},...v.submissions].slice(0,50)}))}
+ function exportSubmissions(){const blob=new Blob([JSON.stringify(store.submissions,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='fmflight-review-export.json';a.click();URL.revokeObjectURL(url)}
+ if(!loaded)return <main className="ws-root">Loading workspace…</main>;
+ return <main className="ws-root"><div className="ws-shell"><header className="ws-nav"><strong>FM FLIGHT <small>Practical AI Workspace</small></strong><nav><a href="/practice">Classic Practice</a><a href="/ops">Field Ops</a><a href="/training">Original Training</a></nav></header>
+ <section className="ws-hero"><span>TRADE-FOCUSED AI PRACTICE</span><h1>Learn AI by doing useful work.</h1><p>Use real-world-style records, work with BOLT in conversation, improve the result, and produce something a qualified coworker could review.</p></section>
+ <div className="ws-settings"><label>Trade<select value={store.trade} onChange={e=>setStore(v=>({...v,trade:e.target.value}))}><option value="">Select trade…</option>{TRADES.map(t=><option key={t.id} value={t.id}>{t.name}</option>)}</select></label><label>Support level<select value={mode} onChange={e=>setMode(e.target.value)}><option value="guided">Guided practice</option><option value="challenge">Job challenge</option><option value="assessment">Independent practice</option></select></label><div><strong>{store.submissions.length}</strong><small>Local submissions</small></div></div>
+ {trade?<><div className="ws-tabs"><button className={tab==='work'?'active':''} onClick={()=>setTab('work')}>Workstation</button><button className={tab==='toolbox'?'active':''} onClick={()=>setTab('toolbox')}>Trade AI toolkit</button><button className={tab==='review'?'active':''} onClick={()=>setTab('review')}>Review & export</button></div>
+ {tab==='work'&&<><div className="ws-jobs">{BASE.map(j=><button key={j.id} className={jobId===j.id?'active':''} onClick={()=>changeJob(j.id)}>{j.title}<small>{j.type}</small></button>)}</div><div className="ws-layout"><div className="ws-main"><section className="ws-panel"><div className="ws-kicker">01 · JOB FILE</div><h2>{job.title}</h2><p>{job.task}</p><p><strong>Expected output:</strong> {job.output}</p><details className="ws-custom"><summary>Bring your own sanitized work order (optional)</summary><p>Practice with a redacted work order only. Do not enter names, phone numbers, access credentials, protected site details, or confidential information. Use only an organization-approved AI service.</p><textarea rows={5} value={custom} onChange={e=>{setCustom(e.target.value);setDocIds([])}} placeholder="Paste a fictional or sanitized work order here…"/>{badInput.test(custom)&&<p className="ws-error">Possible sensitive information detected. Remove it before sending anything to AI.</p>}</details><h3>Source documents</h3><div className="ws-docs">{docs.map((d,i)=><button key={i} className={docIds.includes(i)?'active':''} onClick={()=>setDocIds(v=>v.includes(i)?v.filter(x=>x!==i):[...v,i])}><strong>{docIds.includes(i)?'✓ ':'＋ '}{d.name}</strong><p>{d.body}</p></button>)}</div></section>
+ <section className="ws-panel"><div className="ws-kicker">02 · BOLT CONVERSATION</div><h2>Work with AI</h2><p>Attach relevant sources, ask a useful question, inspect the answer, and improve your instructions.</p><div className="ws-chat" aria-live="polite">{messages.length?messages.map((m,i)=><div key={i}><div className="ws-user"><b>YOU · {i+1}</b><p>{m.prompt}</p></div><div className="ws-bolt"><b>BOLT · LIVE AI</b><pre>{m.reply}</pre></div></div>):<div className="ws-bolt"><b>BOLT</b><p>What would you like me to produce from these records? I'll help you organize the information, but you'll need to verify the result.</p></div>}</div><textarea rows={5} value={draft} onChange={e=>setDraft(e.target.value)} placeholder="Ask BOLT to summarize, compare, draft, or improve something…"/><div className="ws-actions"><button onClick={sample}>Load example prompt</button><button onClick={savePrompt} disabled={!draft.trim()}>Save prompt</button><button className="ws-primary" onClick={send} disabled={busy||!draft.trim()||!attached.length||badInput.test(custom)}>{busy?'BOLT is working…':'Send to BOLT →'}</button></div>{error&&<p className="ws-error" role="alert">{error}</p>}{mode==='guided'&&<div className="ws-coach"><strong>Prompt coaching</strong>{promptReview.found.map(c=><span key={c.name}>{c.ok?'✓':'○'} {c.name}</span>)}<small>These are writing signals, not proof of technical accuracy.</small></div>}</section>
+ <section className="ws-panel"><div className="ws-kicker">03 · VERIFIED WORK PRODUCT</div><h2>Make the result useful</h2><p>Review BOLT's draft and edit it into a source-grounded work product. Don't claim work or verification that hasn't happened.</p><div className="ws-actions"><button onClick={()=>setFinal(answer)} disabled={!answer}>Use latest BOLT draft</button><button onClick={()=>navigator.clipboard?.writeText(final)} disabled={!final.trim()}>Copy final work</button></div><textarea rows={11} value={final} onChange={e=>{setFinal(e.target.value);setFeedback(false)}} placeholder="Prepare a source-grounded handoff, email, or comparison…"/><button className="ws-primary" disabled={final.trim().length<50} onClick={submit}>Submit for formative review →</button>{feedback&&<div className="ws-feedback"><h3>Writing review · {finalReview.score}/100</h3>{finalReview.found.map(c=><p key={c.name}>{c.ok?'✓':'○'} {c.name}</p>)}<p>Automated checks do not verify technical accuracy. A qualified reviewer should inspect the work before operational use.</p></div>}</section></div><aside className="ws-side"><section className="ws-panel"><h3>Before / After</h3><strong>Before · Source material</strong><p>{attached.length} documents attached</p><pre>{attached.map(d=>d.name+': '+d.body).join('\n\n')||'Select source records to begin.'}</pre><strong>After · Your result</strong><pre>{final||'Your edited work product will appear here.'}</pre></section><section className="ws-panel"><h3>What good looks like</h3><p>Useful output, source references, explicit unknowns, verification plan, and a qualified human owner.</p></section></aside></div></>}
+ {tab==='toolbox'&&<section className="ws-panel"><h2>{trade.name} · AI toolkit</h2><p>Practical prompt ideas for your trade. Adapt them to the current work order and approved data-handling policies.</p><div className="ws-tools">{(TEMPLATES[trade.id]||TEMPLATES.hvac).map(name=><article key={name}><strong>{name}</strong><p>Using only the supplied records, prepare a concise {name.toLowerCase()} for a qualified {trade.name} technician. Cite the evidence, identify unknowns and verification needs, and do not invent technical details or authorize work.</p><button onClick={()=>{setDraft('Using only the supplied records, prepare a concise '+name.toLowerCase()+' for a qualified '+trade.name+' technician. Cite the evidence, identify unknowns and verification needs, and do not invent technical details or authorize work.');setTab('work')}}>Use in workspace</button></article>)}</div><h3>Saved prompts</h3>{store.saved.length?store.saved.map(x=><article className="ws-saved" key={x.id}><strong>{x.name} · {x.trade}</strong><p>{x.prompt}</p><button onClick={()=>navigator.clipboard?.writeText(x.prompt)}>Copy</button></article>):<p>No prompts saved yet.</p>}</section>}
+ {tab==='review'&&<section className="ws-panel"><h2>Submission review</h2><p>Submissions are saved in this browser only. They are not shared with supervisors automatically. Export them for review through an approved organizational process.</p><button className="ws-primary" onClick={exportSubmissions} disabled={!store.submissions.length}>Export submissions (JSON)</button>{store.submissions.map(x=><article className="ws-saved" key={x.id}><strong>{x.job} · {x.trade}</strong><small>{new Date(x.date).toLocaleDateString()} · Automated writing score {x.score}/100</small><details><summary>View submitted work</summary><pre>{x.output}</pre></details><label>Reviewer notes (local)<textarea rows={3} value={x.note||''} onChange={e=>setStore(v=>({...v,submissions:v.submissions.map(y=>y.id===x.id?{...y,note:e.target.value}:y)}))}/></label></article>)}</section>}
+ </>:<section className="ws-panel"><h2>Choose a trade to start</h2><p>Your assignments and reusable AI tools will be tailored to your work.</p></section>}
+ <footer>FM Flight · Practical AI Skills · Training only. Use approved tools and qualified review for real work.</footer></div></main>;
+}
