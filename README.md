@@ -1,35 +1,50 @@
-# FM Flight — Fun Upgrade v1
+# FM Flight — Practical AI Skills Upgrade (v1)
 
-This **patches the existing game** rather than replacing it. It preserves the realistic work orders, Evidence Hunt, AI Workbench, AI Detective feedback, Field Handoff, original training, and save data.
+This adds **hands-on AI practice** inside the existing AI Quest Workbench without replacing the working game.
 
-## Features
+## What's new
 
-- **Daily Dispatch Drill**: five rotating, trade-relevant mini-scenarios; one daily +60 XP award, repeatable for practice, immediate explanations and retries. The daily date is based on the player's browser local date. This is intentionally an optional mode.
-- **BOLT field buddy**: contextual hints on the campus and each mission stage; doesn't reveal Detective answers.
-- **Mission-clear celebration**: stronger star/rank presentation and motion with reduced-motion support.
+- **Real AI practice is the default:** Players write their own prompt and send it to the existing `/api/ollama` route. If the provider fails, the error is shown; a clearly labeled **Scripted practice** mode remains available.
+- **Improve and retry:** Players can revise prompts and rerun them, review the last answer, and compare earlier attempts.
+- **BOLT's contextual coaching:** Five practical checks (job context, task, format, uncertainty, human verification), with specific hints. This is a heuristic coaching checklist, not an AI quality or safety certification.
+- **Personal prompt toolbox:** Save and copy reusable prompts. Stored in the same browser via `localStorage`; no account sync.
+- **Preserves:** Realistic work orders, dispatch events, Detective feedback, Field Handoff, existing XP, trade selection, `/training`, and `/game`.
 
 ## Install
 
-Run from a local copy of this package:
+Extract the ZIP. In a terminal run:
 
 ```bash
-python3 scripts/install.py /path/to/fmflight
-cd /path/to/fmflight
-npm install
-npm run build
+python3 scripts/install.py /path/to/your/fmflight
 ```
 
-If the build passes, commit **both** `app/quest/page.jsx` and `app/quest/quest.css`, then push to your deployment branch. Do not commit the `*.bak-fun-v1` backup files. The installer refuses to run twice and fails without changing files if it cannot find expected source sections.
+Or, from the extracted folder, run `python3 scripts/install.py` if the current directory is the repository root.
 
-The patch does **not** overwrite the academy data file, so the realistic tickets remain in place. It does **not** update the live Vercel site automatically.
+The installer adds `app/quest/PracticeConsole.jsx`, `app/quest/practice.css` and patches **only** `app/quest/page.jsx` to show the practice workbench and toolbox. It backs up the old page to `.fmflight-backups/quest-page-before-practical-ai.jsx` and refuses to overwrite existing practice files or an unknown source layout. It does not modify `lib/academy-data.js`, `app/training`, or your API routes.
 
-## Verify
+Then run:
 
-1. Open `/quest`, select a trade, and look for **QUICK PLAY · DISPATCH DRILL** above the campus map.
-2. Select a wrong answer and click **Check my decision**; confirm an explanation and retry button.
-3. Complete a drill correctly; confirm 60 XP awarded only once that day.
-4. Open BOLT on the campus and inside a mission; check the contextual message.
-5. Complete an existing mission and check the new **MISSION CLEARED!** screen.
-6. Check that Detective wrong-answer feedback and Field Handoff still work.
+```bash
+npm install
+npm run build
+git add app/quest/page.jsx app/quest/PracticeConsole.jsx app/quest/practice.css
+git commit -m "Add practical AI coaching and prompt toolbox"
+git push origin main
+```
 
-**Status:** Installer is syntax-checked and tested against source fixtures; a full browser test and Vercel deployment are still required.
+Wait for Vercel deployment. Open `https://fmflight.vercel.app/quest`, select a trade, enter a mission, collect evidence, and enter the AI Workbench.
+
+## Smoke test
+
+1. In Workbench, open **Make the AI useful**, load your workbench setup, edit it, and confirm BOLT's coaching changes.
+2. Run a prompt in **Live FM AI Tool** mode. The configured AI provider must be reachable for a live response.
+3. If it is unavailable, confirm the error appears; switch to **Scripted practice (offline)** and verify the response is labeled scripted.
+4. Improve the prompt, rerun, and expand **Compare earlier attempts**.
+5. Save a reusable prompt; return to the campus and check **Saved AI prompts**. Copy it.
+6. Finish AI Detective and Field Handoff; ensure original gameplay and progress are unaffected.
+
+## Important
+
+This is an additive learning upgrade. The existing mission progression remains available even if the live AI provider is offline. Prompts and AI responses are educational drafts and must be verified by qualified people against approved procedures before real-world use. Avoid entering personal, access, or security-sensitive information.
+
+**Verification performed:** Python installer syntax and JSX parse checks on a local copy of the inspected game page. A complete Next.js build, live AI integration, and browser playtest were not performed.
