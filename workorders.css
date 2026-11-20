@@ -1,0 +1,19 @@
+/* FMFLIGHT_WORKORDER_DISPLAY_V2 */
+.q-root .q-stage-layout > .q-panel:first-child > p:first-of-type,
+.q-root .q-handoff-reference-brief,
+.q-root .q-handoff-reference p.q-handoff-reference-brief {
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  line-height: 1.85;
+  color: #e8f5ff;
+  background: linear-gradient(135deg, #132f42, #0d2535);
+  border: 1px solid #4d7892;
+  border-left: 5px solid #69e3bc;
+  border-radius: 13px;
+  padding: 20px 22px;
+  box-shadow: 0 10px 24px #0002;
+  margin-top: 14px;
+  margin-bottom: 22px;
+}
+.q-root .q-handoff-reference-brief { font-size: .92rem; }

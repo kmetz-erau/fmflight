@@ -1,14 +1,26 @@
-# FM Flight: realistic work orders
+# FM Flight — Work Orders v2
 
-This update improves all 12 AI Quest dispatch tickets across the five trade pathways. Each ticket now shows a unique work order number, priority, reported time, requester, specific building/room or outdoor location, asset, site contact, realistic reported condition, dispatch notes, response window, and the AI-assisted task. All locations and contacts are fictional training examples.
+This fixes **both** the ticket content and its display in AI Quest. Every one of the 12 missions now generates a structured, trade-specific ticket containing a work order number, priority, report time, requester, exact building/room or outdoor location, asset, site contact, reported condition, dispatch notes, deadline, and AI support request. All details are fictional training examples.
 
 ## Install
 
-1. Extract the ZIP.
-2. From inside the extracted folder, run `node install.mjs /path/to/fmflight` (replace the path with your local repository path).
-3. In your FM Flight repository, run `npm run build`.
-4. Commit **only** the updated `lib/academy-data.js` file and push it to GitHub. Vercel should deploy the change.
+Extract the ZIP, then from its extracted directory run:
 
-The installer backs up the existing data file and can be run again safely. It doesn't replace any pages, mission logic, AI Detective feedback, or handoff UI. The revised dispatch ticket flows into Evidence Hunt, AI Workbench, and Field Handoff because they already use `mission.brief(trade)`.
+```bash
+node scripts/install.mjs /path/to/your/fmflight
+```
 
-If a field note was previously identical to the full ticket, it now starts with a concise work-order observation, making the evidence board more believable.
+Replace `/path/to/your/fmflight` with the path to your local Git repository. The installer backs up the two existing files to `.fmflight-backups/`, replaces `lib/academy-data.js`, and **appends** ticket styling to `app/quest/quest.css` (it does not replace the rest of the CSS or your game page).
+
+Then in your FM Flight repo:
+
+```bash
+npm run build
+git add lib/academy-data.js app/quest/quest.css
+git commit -m "Show realistic trade-specific dispatch work orders"
+git push origin main
+```
+
+Check the deployed `/quest` page, choose a trade, open mission 1, and verify the ticket starts with `WORK ORDER WO-02601` and shows a specific room/location. The Field Handoff should show the same ticket. Check GitHub for `FMFLIGHT_REALISTIC_WORKORDERS_V1` and `FMFLIGHT_WORKORDER_DISPLAY_V2` if you still see the old content.
+
+**Note:** Do not just upload the ZIP to Vercel; these source changes must be committed and deployed. This release has not been browser-tested on your production deployment.
