@@ -1,28 +1,31 @@
-# FM Flight AI Detective v7 — visible wrong-answer feedback
+# FM Flight AI Quest - Gameplay Expansion
 
-This is a **complete replacement file** for `app/quest/page.jsx`, not a patch installer. It retains the original-work-order reference in Field Handoff and changes AI Detective so pressing **Check my findings** always displays a result, including when no claims were selected.
+This is a drop-in update for the **existing AI Quest** at `/quest`, not a replacement for the Original FM Journey or AI Academy.
 
-## Install (important)
+## New gameplay
+- **Live dispatch interruption** after the AI Workbench: an incoming report conflicts with the original work order. Players must preserve the uncertainty and choose how to update their AI workflow. Wrong decisions show immediate explanations and allow retry.
+- **Boss missions** every fourth mission (4, 8, 12), with two additional AI claims to investigate.
+- **BOLT companion**: optional contextual Detective hint. Hints reduce the maximum star reward but never block progression.
+- **Updated rewards**: a three-star finish requires a good dispatch decision and no Detective hints, plus the existing quality requirements.
+- **Preserved**: wrong-answer Detective feedback, original work-order display at Field Handoff, trade selection, save data, existing AI endpoint, XP and mission unlocks.
 
-1. Open your local `fmflight` repository.
-2. Back up `app/quest/page.jsx`.
-3. Copy this ZIP's `app/quest/page.jsx` over that exact path in the repository. Do not place the ZIP or an extra folder inside `app/quest`.
-4. Check the installed file contains the text `WRONG SELECTION` and `MISSED MISTAKE`.
-5. Run `npm run build`.
-6. Commit and push **the actual changed file**:
+## Install
+1. Extract this ZIP.
+2. Copy `app/quest/page.jsx` and `app/quest/quest.css` into your existing `fmflight` repository, replacing those two files. **Do not replace your other pages or `lib` folder.**
+3. Run `npm run build` inside your repository.
+4. Commit and push the two changed files, then wait for Vercel deployment.
+5. Open `https://fmflight.vercel.app/quest` and hard-refresh.
 
-```bash
-git add app/quest/page.jsx
-git commit -m "Show wrong-answer feedback in AI Detective"
-git push origin main
-```
+## Test checklist
+- Start a mission, gather three or four relevant clues, equip a prompt, and run the AI.
+- Confirm a dispatch interruption appears before Detective.
+- Choose a wrong option and confirm feedback + retry; choose the option preserving both reports to proceed.
+- On mission 4, 8, or 12, confirm seven AI claims rather than five.
+- In Detective, flag a supported claim and check findings: the existing red wrong-answer feedback must still appear.
+- Ask BOLT for a hint, finish the mission, and confirm the star result.
+- In Field Handoff, confirm the original work order is visible.
 
-7. Confirm Vercel deployed the latest commit and refresh `https://fmflight.vercel.app/quest` (Ctrl+Shift+R).
-
-## Verify
-
-Enter a mission, reach AI Detective, deliberately flag a supported claim, and click **Check my findings**. A prominent red `Not quite — check your selections` panel should appear with wrong-selection and missed-mistake counts. The claims show red `WRONG SELECTION` or `MISSED MISTAKE` messages. Adjust selections and try again.
-
-If the live site does not show this, inspect `app/quest/page.jsx` on GitHub main and confirm it contains `WRONG SELECTION`. If it doesn't, the updated file was not pushed. If it does, verify Vercel is deploying the same repo/branch and that the latest deployment succeeded.
-
-This package was source-checked and ZIP-verified; it has not been browser-playtested or deployed by the assistant. Replacing this file may overwrite unrelated edits made after the supplied source snapshot.
+## Notes
+- This is an educational simulation, not an authorization for physical maintenance work.
+- This update preserves localStorage key `fmflight-ai-quest-v1`, so progress should remain.
+- JSX syntax and TypeScript transpilation were checked. A full Next.js build and live browser playtest were not possible in this environment.
