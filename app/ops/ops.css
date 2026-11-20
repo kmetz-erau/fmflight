@@ -13,3 +13,10 @@
 .ops-arcade-options button b{display:grid;place-items:center;flex-shrink:0;width:36px;height:36px;background:#2b5664;border-radius:9px;color:#d5fff2}
 .ops-arcade-options button:disabled{cursor:default;opacity:.8}
 .ops-arcade .ops-good,.ops-arcade .ops-bad{padding:20px}
+
+/* Short replayable daily scenario */
+.ops-quick{display:flex;justify-content:space-between;align-items:center;gap:20px;background:linear-gradient(115deg,#244e48,#15384b);border:1px solid #6baf9b;border-radius:18px;padding:24px;margin:4px 0 28px}
+.ops-quick h2{margin:10px 0 5px;font-size:1.4rem}
+.ops-quick p{color:#c4e1df;max-width:740px;font-size:.88rem}
+.ops-quick .ops-primary{white-space:nowrap;margin:0}
+@media(max-width:720px){.ops-quick{flex-direction:column;align-items:stretch}.ops-quick .ops-primary{white-space:normal}}
