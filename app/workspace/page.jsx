@@ -28,7 +28,7 @@ export default function Workspace(){
  const trade=TRADES.find(t=>t.id===store.trade);
  const jobs=TRADE_JOBS[store.trade]||[];
  const job=jobs.find(j=>j.id===jobId)||jobs[0];
- const docs=useMemo(()=>custom.trim()?[{name:'Sanitized practice work order',body:custom.trim()}]:job.docs,[job,custom]);
+ const docs=useMemo(()=>custom.trim()?[{name:'Sanitized practice work order',body:custom.trim()}]:job?.docs||[],[job,custom]);
  const attached=docs.filter((d,i)=>docIds.includes(i));
  const promptReview=reviewText(draft),finalReview=reviewText(final);
  function reset(){setMessages([]);setDraft('');setAnswer('');setFinal('');setDocIds([]);setError('');setFeedback(false)}
