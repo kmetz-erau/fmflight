@@ -1,26 +1,35 @@
-# FM Flight — Work Orders v2
+# FM Flight — Fun Upgrade v1
 
-This fixes **both** the ticket content and its display in AI Quest. Every one of the 12 missions now generates a structured, trade-specific ticket containing a work order number, priority, report time, requester, exact building/room or outdoor location, asset, site contact, reported condition, dispatch notes, deadline, and AI support request. All details are fictional training examples.
+This **patches the existing game** rather than replacing it. It preserves the realistic work orders, Evidence Hunt, AI Workbench, AI Detective feedback, Field Handoff, original training, and save data.
+
+## Features
+
+- **Daily Dispatch Drill**: five rotating, trade-relevant mini-scenarios; one daily +60 XP award, repeatable for practice, immediate explanations and retries. The daily date is based on the player's browser local date. This is intentionally an optional mode.
+- **BOLT field buddy**: contextual hints on the campus and each mission stage; doesn't reveal Detective answers.
+- **Mission-clear celebration**: stronger star/rank presentation and motion with reduced-motion support.
 
 ## Install
 
-Extract the ZIP, then from its extracted directory run:
+Run from a local copy of this package:
 
 ```bash
-node scripts/install.mjs /path/to/your/fmflight
-```
-
-Replace `/path/to/your/fmflight` with the path to your local Git repository. The installer backs up the two existing files to `.fmflight-backups/`, replaces `lib/academy-data.js`, and **appends** ticket styling to `app/quest/quest.css` (it does not replace the rest of the CSS or your game page).
-
-Then in your FM Flight repo:
-
-```bash
+python3 scripts/install.py /path/to/fmflight
+cd /path/to/fmflight
+npm install
 npm run build
-git add lib/academy-data.js app/quest/quest.css
-git commit -m "Show realistic trade-specific dispatch work orders"
-git push origin main
 ```
 
-Check the deployed `/quest` page, choose a trade, open mission 1, and verify the ticket starts with `WORK ORDER WO-02601` and shows a specific room/location. The Field Handoff should show the same ticket. Check GitHub for `FMFLIGHT_REALISTIC_WORKORDERS_V1` and `FMFLIGHT_WORKORDER_DISPLAY_V2` if you still see the old content.
+If the build passes, commit **both** `app/quest/page.jsx` and `app/quest/quest.css`, then push to your deployment branch. Do not commit the `*.bak-fun-v1` backup files. The installer refuses to run twice and fails without changing files if it cannot find expected source sections.
 
-**Note:** Do not just upload the ZIP to Vercel; these source changes must be committed and deployed. This release has not been browser-tested on your production deployment.
+The patch does **not** overwrite the academy data file, so the realistic tickets remain in place. It does **not** update the live Vercel site automatically.
+
+## Verify
+
+1. Open `/quest`, select a trade, and look for **QUICK PLAY · DISPATCH DRILL** above the campus map.
+2. Select a wrong answer and click **Check my decision**; confirm an explanation and retry button.
+3. Complete a drill correctly; confirm 60 XP awarded only once that day.
+4. Open BOLT on the campus and inside a mission; check the contextual message.
+5. Complete an existing mission and check the new **MISSION CLEARED!** screen.
+6. Check that Detective wrong-answer feedback and Field Handoff still work.
+
+**Status:** Installer is syntax-checked and tested against source fixtures; a full browser test and Vercel deployment are still required.
