@@ -20,3 +20,12 @@
 .ops-quick p{color:#c4e1df;max-width:740px;font-size:.88rem}
 .ops-quick .ops-primary{white-space:nowrap;margin:0}
 @media(max-width:720px){.ops-quick{flex-direction:column;align-items:stretch}.ops-quick .ops-primary{white-space:normal}}
+
+/* Conversational BOLT coaching */
+.ops-bolt-level{display:inline-block;margin:12px 0 8px;background:#20483e;border:1px solid #5cae93;border-radius:9px;padding:9px 13px;font-size:.8rem;color:#c6f3e2}
+.ops-bolt-level strong{color:#8ef5d1}
+.ops-bolt-feedback{background:#1b3c48;border:1px solid #497d86;border-radius:12px;padding:14px;margin:12px 0}
+.ops-bolt-feedback strong{color:#90e6cd}
+.ops-bolt-feedback p{margin:8px 0;color:#e5f5f5}
+.ops-bolt-feedback small,.ops-bolt-note{display:block;color:#b5ced4;font-size:.77rem}
+.ops-bolt-note{margin-top:10px;padding-top:10px;border-top:1px solid #365b66}
