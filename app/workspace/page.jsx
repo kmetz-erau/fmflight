@@ -96,7 +96,7 @@ export default function SimpleFlight(){
  <section className="sf-card sf-review" aria-labelledby="sf-review-title">
   <h2 id="sf-review-title">How did you do?</h2><p>{feedback.summary}</p>
   <p className="sf-check-explainer">This quick check looks for three things in your writing. It does not check whether the information is correct.</p>
-  <ul className="sf-feedback-list">{feedback.items.map(item=><li key={item.id} className={item.found?'found':''}><div><strong>{item.label}</strong><span>{item.found?'✓ Included':'+ Add this'}</span></div><p>{item.message}</p>{item.evidence&&<blockquote>{item.evidence}</blockquote>}</li>)}</ul>
+  <ul className="sf-feedback-list">{feedback.items.map(item=><li key={item.id} className={item.found?'found':''}><div><strong>{item.label}</strong><span>{item.found?'✓ Included':'+ Add this'}</span></div><p>{item.message}</p></li>)}</ul>
   <div className="sf-actions"><button className="sf-secondary" onClick={()=>setView('work')}>Make changes to my work</button></div>
  </section>
  <section className="sf-card sf-saved-work"><h2>Your saved work</h2><label className="sf-compose-label" htmlFor="sf-completed-text">{job.output}</label><textarea id="sf-completed-text" ref={finalField} rows={7} value={final} readOnly/><button className="sf-secondary" onClick={copyWork} disabled={copyState==='pending'}>{copyState==='copied'?'✓ Copied':copyState==='pending'?'Copying…':'Copy finished work'}</button><p className={'sf-copy-status '+(copyState==='manual'?'manual':'')} role="status" aria-live="polite" aria-atomic="true">{copyMessage}</p></section>
